@@ -586,7 +586,7 @@ html,body{
     </div>
 
     <button type="button" class="play-cta" id="btnStart">▶ MULAI PETUALANGAN</button>
-    <div class="mini-controls-bar">A/D Gerak • W/Spasi Lompat • S Tahan • J Serang • K Jurus</div>
+    <div class="mini-controls-bar">A/D Gerak • W/Spasi Lompat • S Tahan • J Serang • K Jurus • L Jurus Rahasia</div>
   </div>
 </div>
 
@@ -762,11 +762,9 @@ class HorrorEpicAudioEngine {
       } else if (name === 'sfx_tuyul') {
         s = Math.sin(2 * Math.PI * (720 + Math.sin(t * 70) * 230) * t) * 0.6;
       } else if (name === 'sfx_pocong_fire') {
-        // Semburan api menderu!
         s = (Math.random() * 2 - 1) * 0.68 +
             Math.sin(2 * Math.PI * (110 + Math.sin(t * 36) * 45) * t) * 0.55;
       } else if (name === 'sfx_screech') {
-        // Gelombang suara melengking Kuntilanak!
         const freq = 1150 + Math.sin(t * 48) * 320 + t * 420;
         s = Math.sin(2 * Math.PI * freq * t) * 0.65 +
             Math.sin(2 * Math.PI * (freq * 1.5) * t) * 0.35;
@@ -885,7 +883,6 @@ class HorrorEpicAudioEngine {
     if (!this.enabled || !this.bgmPlaying) return;
     if (elapsed >= this._nextBeat) {
       this._nextBeat = elapsed + 0.42;
-      // Tangga nada Gamelan Pelog Horor Misterius + Gong Dalam
       const notes = [293.66, 311.13, 392.00, 440.00, 466.16, 440.00, 392.00, 311.13];
       const f = notes[this._step % notes.length];
       const isGongBeat = (this._step % 8 === 0);
@@ -948,7 +945,6 @@ scene.fog = new THREE.FogExp2(0x060813, 0.024);
 const camera = new THREE.PerspectiveCamera(44, window.innerWidth / window.innerHeight, 0.1, 160);
 camera.position.set(0, 3.0, 11.2);
 
-// Pencahayaan Malam Bulan Purnama Misterius
 const hemiLight = new THREE.HemisphereLight(0x475569, 0x090d16, 0.85);
 scene.add(hemiLight);
 
@@ -964,7 +960,6 @@ moonLight.shadow.camera.top = 16;
 moonLight.shadow.camera.bottom = -5;
 scene.add(moonLight);
 
-// Lampu sorot mistis & kilatan pertarungan warna-warni
 const colorLightL = new THREE.PointLight(0x38bdf8, 1.2, 26);
 colorLightL.position.set(-4, 4.5, 4);
 scene.add(colorLightL);
@@ -1088,7 +1083,6 @@ function makeDarkGroundTexture() {
   const ctx = c.getContext('2d');
   ctx.fillStyle = '#1e1b18';
   ctx.fillRect(0, 0, 128, 128);
-  // Lapisan rumput malam berlumut gelap
   ctx.fillStyle = '#14532d';
   ctx.fillRect(0, 0, 128, 22);
   ctx.strokeStyle = 'rgba(0,0,0,0.45)';
@@ -1203,7 +1197,6 @@ function makeGhostFaceTexture(type, dizzy = false) {
   }
 
   if (type === 'pocong') {
-    // Sesuai lampiran: wajah gelap cekung dengan bola mata putih menyala!
     ctx.fillStyle = '#09090b';
     ctx.beginPath();
     ctx.arc(43, 52, 13, 0, Math.PI * 2);
@@ -1264,7 +1257,11 @@ function createOverheadTag(titleText, accentColor) {
   const ctx = c.getContext('2d');
   ctx.fillStyle = 'rgba(10, 12, 24, 0.84)';
   ctx.beginPath();
-  ctx.roundRect(12, 8, 232, 48, 16);
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(12, 8, 232, 48, 16);
+  } else {
+    ctx.rect(12, 8, 232, 48);
+  }
   ctx.fill();
   ctx.strokeStyle = accentColor;
   ctx.lineWidth = 4;
@@ -1283,7 +1280,7 @@ function createOverheadTag(titleText, accentColor) {
 }
 
 /* ============================================================================
-   5. KARAKTER PROPORSIONAL DENGAN SENDI BERSIKU & LUTUT (TIDAK KAKU)
+   5. KARAKTER UTAMA PROPORSIONAL DENGAN SENDI BERSIKU & LUTUT
    ============================================================================ */
 function buildArticulatedHeroRig(heroId) {
   const h = HEROES[heroId];
@@ -1294,27 +1291,29 @@ function buildArticulatedHeroRig(heroId) {
   const pantsMat = new THREE.MeshLambertMaterial({ color: h.pantsColor });
   const bandMat = new THREE.MeshLambertMaterial({ color: h.headbandColor });
   const shoeMat = new THREE.MeshLambertMaterial({ color: h.shoeColor });
+  const hairMat = new THREE.MeshLambertMaterial({ color: 0x111827 });
 
   const pelvis = new THREE.Group();
   pelvis.position.y = 0.88;
   root.add(pelvis);
 
-  const hipMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.30, 0.24, 14), pantsMat);
+  const hipMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.29, 0.24, 14), pantsMat);
   pelvis.add(hipMesh);
 
   const torso = new THREE.Group();
   torso.position.y = 0.12;
   pelvis.add(torso);
 
-  const chest = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.28, 0.64, 16), shirtMat);
+  const chest = new THREE.Mesh(new THREE.CylinderGeometry(0.33, 0.27, 0.64, 16), shirtMat);
   chest.position.y = 0.32;
   chest.castShadow = true;
   torso.add(chest);
 
-  const belt = new THREE.Mesh(new THREE.CylinderGeometry(0.31, 0.31, 0.11, 16), bandMat);
+  const belt = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.30, 0.11, 16), bandMat);
   belt.position.y = 0.06;
   torso.add(belt);
 
+  // Leher & Kepala Bulat Proporsional + Telinga + Pita Iket Kepala
   const head = new THREE.Group();
   head.position.y = 0.72;
   torso.add(head);
@@ -1327,54 +1326,58 @@ function buildArticulatedHeroRig(heroId) {
   const faceHappyTex = makeHeroFaceTexture(heroId === 'iyen', 'happy');
   const faceDizzyTex = makeHeroFaceTexture(heroId === 'iyen', 'dizzy');
 
-  // Kepala bulat proporsional (bukan kotak) dengan wajah ekspresif menghadap depan
-  const headSphere = new THREE.Mesh(new THREE.SphereGeometry(0.32, 20, 18), skinMat);
-  headSphere.scale.set(0.96, 1.04, 0.94);
-  headSphere.position.y = 0.28;
-  headSphere.castShadow = true;
-  head.add(headSphere);
+  const cranium = new THREE.Mesh(new THREE.SphereGeometry(0.31, 18, 16), skinMat);
+  cranium.position.y = 0.28;
+  cranium.castShadow = true;
+  head.add(cranium);
 
   const faceMat = new THREE.MeshBasicMaterial({ map: faceNormalTex });
-  const facePatch = new THREE.Mesh(new THREE.CircleGeometry(0.24, 20), faceMat);
-  facePatch.position.set(0, 0.26, 0.295);
+  const facePatch = new THREE.Mesh(new THREE.CircleGeometry(0.24, 18), faceMat);
+  facePatch.position.set(0, 0.27, 0.285);
+  facePatch.scale.set(0.95, 1.02, 1);
   head.add(facePatch);
 
-  // Telinga proporsional
-  const earGeo = new THREE.SphereGeometry(0.065, 10, 10);
+  // Telinga Kiri & Kanan
+  const earGeo = new THREE.SphereGeometry(0.075, 8, 8);
   const earL = new THREE.Mesh(earGeo, skinMat);
   earL.position.set(-0.30, 0.27, 0);
   const earR = new THREE.Mesh(earGeo, skinMat);
   earR.position.set(0.30, 0.27, 0);
   head.add(earL, earR);
 
-  // Rambut & Iket Kepala Pendekar dengan pita berkibar di belakang
+  // Rambut Pendekar
   const hairCap = new THREE.Mesh(
-    new THREE.SphereGeometry(0.335, 18, 14, 0, Math.PI * 2, 0, Math.PI * 0.52),
-    new THREE.MeshLambertMaterial({ color: 0x111827 })
+    new THREE.SphereGeometry(0.325, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.52),
+    hairMat
   );
   hairCap.position.set(0, 0.30, -0.02);
   hairCap.rotation.x = -0.18;
   head.add(hairCap);
 
-  const headband = new THREE.Mesh(new THREE.TorusGeometry(0.315, 0.042, 8, 22), bandMat);
-  headband.rotation.x = Math.PI / 2 - 0.12;
-  headband.position.set(0, 0.40, 0);
+  // Iket Kepala Melingkar + Simpul Pita Belakang
+  const headband = new THREE.Mesh(new THREE.TorusGeometry(0.31, 0.042, 8, 22), bandMat);
+  headband.rotation.x = Math.PI / 2;
+  headband.position.y = 0.39;
   head.add(headband);
 
-  const bandTail = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.28, 0.03), bandMat);
-  bandTail.position.set(0, 0.30, -0.33);
-  bandTail.rotation.x = 0.35;
-  head.add(bandTail);
+  const ribbonTail1 = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.24, 0.03), bandMat);
+  ribbonTail1.position.set(-0.05, 0.31, -0.34);
+  ribbonTail1.rotation.set(0.35, 0, 0.22);
+  const ribbonTail2 = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.03), bandMat);
+  ribbonTail2.position.set(0.05, 0.31, -0.34);
+  ribbonTail2.rotation.set(0.35, 0, -0.22);
+  head.add(ribbonTail1, ribbonTail2);
 
+  // Lengan Bersiku (Bahu -> Lengan Atas -> Siku -> Lengan Bawah -> Tangan)
   function makeJointedArm(side) {
     const shoulder = new THREE.Group();
-    shoulder.position.set(side * 0.42, 0.56, 0);
+    shoulder.position.set(side * 0.41, 0.56, 0);
     torso.add(shoulder);
 
-    const shoulderBall = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 10), shirtMat);
+    const shoulderBall = new THREE.Mesh(new THREE.SphereGeometry(0.125, 10, 10), shirtMat);
     shoulder.add(shoulderBall);
 
-    const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.10, 0.34, 10), shirtMat);
+    const upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.105, 0.095, 0.34, 10), shirtMat);
     upperArm.position.y = -0.17;
     upperArm.castShadow = true;
     shoulder.add(upperArm);
@@ -1383,15 +1386,15 @@ function buildArticulatedHeroRig(heroId) {
     elbow.position.y = -0.34;
     shoulder.add(elbow);
 
-    const elbowJoint = new THREE.Mesh(new THREE.SphereGeometry(0.10, 10, 10), skinMat);
+    const elbowJoint = new THREE.Mesh(new THREE.SphereGeometry(0.095, 10, 10), skinMat);
     elbow.add(elbowJoint);
 
-    const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.085, 0.32, 10), skinMat);
+    const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.08, 0.32, 10), skinMat);
     forearm.position.y = -0.16;
     forearm.castShadow = true;
     elbow.add(forearm);
 
-    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.125, 10, 10), skinMat);
+    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 10), skinMat);
     hand.position.y = -0.34;
     elbow.add(hand);
 
@@ -1400,12 +1403,13 @@ function buildArticulatedHeroRig(heroId) {
   const armL = makeJointedArm(-1);
   const armR = makeJointedArm(1);
 
+  // Kaki Berlutut (Pinggul -> Paha -> Lutut -> Betis -> Sepatu)
   function makeJointedLeg(side) {
     const hip = new THREE.Group();
-    hip.position.set(side * 0.17, -0.06, 0);
+    hip.position.set(side * 0.16, -0.06, 0);
     pelvis.add(hip);
 
-    const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.11, 0.38, 10), pantsMat);
+    const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.125, 0.105, 0.38, 10), pantsMat);
     thigh.position.y = -0.19;
     thigh.castShadow = true;
     hip.add(thigh);
@@ -1414,10 +1418,10 @@ function buildArticulatedHeroRig(heroId) {
     knee.position.y = -0.38;
     hip.add(knee);
 
-    const kneeBall = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), pantsMat);
+    const kneeBall = new THREE.Mesh(new THREE.SphereGeometry(0.105, 10, 10), pantsMat);
     knee.add(kneeBall);
 
-    const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.105, 0.095, 0.36, 10), pantsMat);
+    const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.09, 0.36, 10), pantsMat);
     shin.position.y = -0.18;
     shin.castShadow = true;
     knee.add(shin);
@@ -1468,7 +1472,7 @@ function buildArticulatedHeroRig(heroId) {
 }
 
 /* ============================================================================
-   6. PEMBANGUN 3 HANTU PROPORSIONAL & BERSENDI (TUYUL, POCONG, KUNTILANAK)
+   6. PEMBANGUN 3 HANTU PROPORSIONAL SESUAI LAMPIRAN (POCONG, KUNTILANAK, TUYUL)
    ============================================================================ */
 function buildArticulatedGhostRig(enemyId, isMinion = false) {
   const root = new THREE.Group();
@@ -1525,37 +1529,35 @@ function buildArticulatedGhostRig(enemyId, isMinion = false) {
     tuft.rotation.x = Math.PI;
     headGroup.add(tuft);
 
-    // 4 Simpul tali ikatan pocong (jambul, leher, pinggang, mata kaki) + benjolan simpul
+    // 4 Simpul Tali Kafan + Tonjolan Ikatan Depan
     [2.32, 1.78, 1.14, 0.24].forEach((ky, idx) => {
       const r = [0.15, 0.23, 0.29, 0.23][idx];
+      const zOff = [0.14, 0.22, 0.28, 0.22][idx];
       const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.04, 8, 16), ropeMat);
       ring.rotation.x = Math.PI / 2;
       ring.position.y = ky;
       const knot = new THREE.Mesh(new THREE.SphereGeometry(0.065, 8, 8), ropeMat);
-      knot.position.set(0, ky, r + 0.02);
+      knot.position.set(0, ky, zOff);
       root.add(ring, knot);
     });
   } else if (enemyId === 'kuntilanak') {
     const dressTex = makePocongClothTexture();
     const dressMat = new THREE.MeshLambertMaterial({ map: dressTex, side: THREE.DoubleSide });
     const paleSkin = new THREE.MeshLambertMaterial({ color: 0xcbd5e1 });
-    const hairMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
+    const hairMat = new THREE.MeshLambertMaterial({ color: 0x090d16 });
 
     const dress = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.50, 1.48, 16), dressMat);
     dress.position.y = 1.02;
     dress.castShadow = true;
     root.add(dress);
 
-    // Kaki telanjang pucat mengintip di bawah daster robek (sesuai gambar lampiran)
-    const bareLegGeo = new THREE.CylinderGeometry(0.065, 0.055, 0.34, 8);
-    const bareFootGeo = new THREE.BoxGeometry(0.13, 0.07, 0.24);
-    [-0.13, 0.13].forEach((lx) => {
-      const leg = new THREE.Mesh(bareLegGeo, paleSkin);
-      leg.position.set(lx, 0.20, 0);
-      const foot = new THREE.Mesh(bareFootGeo, paleSkin);
-      foot.position.set(lx, 0.04, 0.05);
-      root.add(leg, foot);
-    });
+    // Kaki Telanjang Pucat di bawah Daster Robek (sesuai lampiran)
+    const bareFootGeo = new THREE.BoxGeometry(0.14, 0.08, 0.28);
+    const bareFootL = new THREE.Mesh(bareFootGeo, paleSkin);
+    bareFootL.position.set(-0.14, 0.08, 0.05);
+    const bareFootR = new THREE.Mesh(bareFootGeo, paleSkin);
+    bareFootR.position.set(0.14, 0.08, 0.05);
+    root.add(bareFootL, bareFootR);
 
     for (let i = 0; i < 12; i++) {
       const ang = (i / 12) * Math.PI * 2;
@@ -1571,20 +1573,21 @@ function buildArticulatedGhostRig(enemyId, isMinion = false) {
     root.add(headGroup);
     parts.head = headGroup;
 
-    // Kepala proporsional bulat pucat + wajah Kuntilanak
+    // Kepala Bulat Pucat + Wajah Lingkar Mata Hitam & Pupil Putih
     const skull = new THREE.Mesh(new THREE.SphereGeometry(0.27, 16, 14), paleSkin);
-    skull.scale.set(0.92, 1.06, 0.92);
+    skull.scale.set(0.95, 1.08, 0.95);
     headGroup.add(skull);
 
-    const kFace = new THREE.Mesh(new THREE.CircleGeometry(0.21, 16), faceMat);
-    kFace.position.set(0, 0, 0.245);
-    headGroup.add(kFace);
+    const faceDisc = new THREE.Mesh(new THREE.CircleGeometry(0.22, 16), faceMat);
+    faceDisc.position.set(0, -0.01, 0.245);
+    faceDisc.scale.set(0.92, 1.05, 1);
+    headGroup.add(faceDisc);
 
     const hairGroup = new THREE.Group();
     headGroup.add(hairGroup);
     parts.hairGroup = hairGroup;
 
-    const hairCrown = new THREE.Mesh(new THREE.SphereGeometry(0.38, 14, 12), hairMat);
+    const hairCrown = new THREE.Mesh(new THREE.SphereGeometry(0.36, 14, 12), hairMat);
     hairCrown.position.set(0, 0.10, -0.05);
     hairGroup.add(hairCrown);
 
@@ -1595,9 +1598,34 @@ function buildArticulatedGhostRig(enemyId, isMinion = false) {
       hairGroup.add(strand);
     }
 
-    // Lengan Kuntilanak Bersiku
+    // Lengan Kuntilanak Bersiku (Bahu -> Lengan Atas -> Siku -> Lengan Bawah -> Tangan Pucat)
+    function makeKuntiArm(side) {
+      const shoulder = new THREE.Group();
+      shoulder.position.set(side * 0.36, 1.66, 0);
+      root.add(shoulder);
+
+      const upper = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.13, 0.42, 8), dressMat);
+      upper.position.y = -0.20;
+      shoulder.add(upper);
+
+      const elbow = new THREE.Group();
+      elbow.position.y = -0.40;
+      shoulder.add(elbow);
+
+      const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.055, 0.40, 8), paleSkin);
+      forearm.position.y = -0.20;
+      elbow.add(forearm);
+
+      const hand = new THREE.Mesh(new THREE.SphereGeometry(0.075, 8, 8), paleSkin);
+      hand.position.y = -0.41;
+      elbow.add(hand);
+
+      return { shoulder, elbow };
+    }
+    parts.armL = makeKuntiArm(-1);
     parts.armR = makeKuntiArm(1);
   } else {
+    // Tuyul proporsional sesuai lampiran: kepala plontos besar, telinga runcing, cawat cokelat, pegang emas
     const skinMat = new THREE.MeshLambertMaterial({ color: 0xc4bfb8 });
     const loinMat = new THREE.MeshLambertMaterial({ color: 0x785d3c });
     const goldMat = new THREE.MeshStandardMaterial({
@@ -1622,23 +1650,24 @@ function buildArticulatedGhostRig(enemyId, isMinion = false) {
     root.add(headGroup);
     parts.head = headGroup;
 
-    // Kepala plontos bulat proporsional sesuai gambar lampiran Tuyul
-    const skull = new THREE.Mesh(new THREE.SphereGeometry(0.32, 18, 16), skinMat);
-    skull.scale.set(0.98, 1.04, 0.96);
+    // Kepala Plontos Bulat Besar + Wajah Mata Melotot & Seringai
+    const skull = new THREE.Mesh(new THREE.SphereGeometry(0.34, 18, 16), skinMat);
+    skull.scale.set(1.02, 1.06, 0.98);
     skull.castShadow = true;
     headGroup.add(skull);
 
-    const tFace = new THREE.Mesh(new THREE.CircleGeometry(0.24, 18), faceMat);
-    tFace.position.set(0, -0.02, 0.295);
-    headGroup.add(tFace);
+    const faceDisc = new THREE.Mesh(new THREE.CircleGeometry(0.26, 18), faceMat);
+    faceDisc.position.set(0, -0.02, 0.315);
+    headGroup.add(faceDisc);
 
-    const earGeo = new THREE.ConeGeometry(0.09, 0.28, 6);
+    // Telinga Runcing Menyamping
+    const earGeo = new THREE.ConeGeometry(0.09, 0.26, 5);
     const earL = new THREE.Mesh(earGeo, skinMat);
-    earL.position.set(-0.37, 0.02, 0);
-    earL.rotation.z = Math.PI / 2 - 0.22;
+    earL.position.set(-0.38, 0.02, 0);
+    earL.rotation.z = Math.PI / 2 - 0.2;
     const earR = new THREE.Mesh(earGeo, skinMat);
-    earR.position.set(0.37, 0.02, 0);
-    earR.rotation.z = -Math.PI / 2 + 0.22;
+    earR.position.set(0.38, 0.02, 0);
+    earR.rotation.z = -Math.PI / 2 + 0.2;
     headGroup.add(earL, earR);
 
     function makeTuyulArm(side) {
@@ -1705,12 +1734,10 @@ function buildArticulatedGhostRig(enemyId, isMinion = false) {
   root.add(dizzyStars);
 
   if (isMinion) {
-    root.scale.setScalar(0.60);
+    root.scale.setScalar(0.62);
   } else {
-    const tag = createOverheadTag(
-      enemyId === 'tuyul' ? 'Bos Tuyul' : (enemyId === 'pocong' ? 'Bos Pocong' : 'Bos Kuntilanak'),
-      '#f43f5e'
-    );
+    const lvlInfo = LEVELS.find((l) => l.enemyId === enemyId);
+    const tag = createOverheadTag(lvlInfo ? lvlInfo.name : 'Bos Hantu', '#f43f5e');
     tag.position.y = enemyId === 'tuyul' ? 1.80 : 2.65;
     root.add(tag);
   }
@@ -1725,9 +1752,8 @@ function buildArticulatedGhostRig(enemyId, isMinion = false) {
 }
 
 /* ============================================================================
-   7. LINGKUNGAN HOROR DARK & MISTERIUS LENGKAP:
-      BULAN PURNAMA, AWAN, POHON TINGGI, GAGAK, LABA-LABA & SARANG, ULAR,
-      BATU, RUMPUT, SRIGALA, KELABANG, KALA JENGKING
+   7. LINGKUNGAN HOROR DARK MISTERIUS & LENGKAP (BULAN PURNAMA, GAGAK, LABA-LABA,
+      ULAR, SRIGALA, KELABANG, KALAJENGKING, POHON TINGGI, BATU, RUMPUT, AWAN)
    ============================================================================ */
 const worldGroup = new THREE.Group();
 scene.add(worldGroup);
@@ -1735,17 +1761,14 @@ scene.add(worldGroup);
 const questionBlocks = [];
 const worldCoins = [];
 const worldMinions = [];
-const clouds = [];
-const crows = [];
+const darkClouds = [];
+const flyingCrows = [];
 const hangingSpiders = [];
-const snakes = [];
-const centipedes = [];
-const scorpions = [];
-const wolves = [];
+const crawlingCritters = [];
 const grassBlades = [];
-let fullMoonGroup = null;
-const BOSS_HANG_TREE_X = 34.4;
-const BOSS_HANG_TREE_Y = 3.75;
+let fullMoonMesh = null;
+let wolfGroup = null;
+let kuntiTreeBranchPos = new THREE.Vector3(33.5, 4.3, 0);
 
 const STAGE_START_X = -5.5;
 const BOSS_TRIGGER_X = 27.5;
@@ -1759,328 +1782,293 @@ function clearWorldEntities() {
   questionBlocks.length = 0;
   worldCoins.length = 0;
   worldMinions.length = 0;
-  clouds.length = 0;
-  crows.length = 0;
+  darkClouds.length = 0;
+  flyingCrows.length = 0;
   hangingSpiders.length = 0;
-  snakes.length = 0;
-  centipedes.length = 0;
-  scorpions.length = 0;
-  wolves.length = 0;
+  crawlingCritters.length = 0;
   grassBlades.length = 0;
-  fullMoonGroup = null;
-}
-
-function createTallSpookyTree(x, z, scale = 1.0, hasHangBranch = false) {
-  const tg = new THREE.Group();
-  tg.position.set(x, 0, z);
-  const barkMat = new THREE.MeshLambertMaterial({ color: 0x1c1917 });
-  const darkLeafMat = new THREE.MeshLambertMaterial({ color: 0x064e3b });
-
-  const trunkH = 7.2 * scale;
-  const trunk = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.24 * scale, 0.56 * scale, trunkH, 9),
-    barkMat
-  );
-  trunk.position.y = trunkH * 0.5;
-  trunk.castShadow = true;
-  tg.add(trunk);
-
-  // Dahan-dahan tinggi melengkung menyeramkan
-  const branchAngles = [0.6, -0.75, 2.3, -2.2];
-  branchAngles.forEach((ang, idx) => {
-    const bh = (3.6 + idx * 0.85) * scale;
-    const br = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.08 * scale, 0.20 * scale, 2.6 * scale, 7),
-      barkMat
-    );
-    br.position.set(Math.cos(ang) * 0.85 * scale, bh, Math.sin(ang) * 0.65 * scale);
-    br.rotation.z = Math.cos(ang) * 0.72;
-    br.rotation.x = Math.sin(ang) * 0.45;
-    tg.add(br);
-
-    // Rimbun daun gelap di pucuk pohon tinggi
-    const canopy = new THREE.Mesh(new THREE.DodecahedronGeometry(1.15 * scale, 1), darkLeafMat);
-    canopy.position.set(Math.cos(ang) * 1.45 * scale, bh + 0.75 * scale, Math.sin(ang) * 0.9 * scale);
-    tg.add(canopy);
-  });
-
-  // Dahan khusus tempat Kuntilanak bergelantungan di arena Bos!
-  if (hasHangBranch) {
-    const hangBranch = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.11, 0.22, 3.8, 8),
-      barkMat
-    );
-    hangBranch.position.set(-1.1, BOSS_HANG_TREE_Y + 0.45, 1.6);
-    hangBranch.rotation.z = Math.PI / 2 - 0.12;
-    tg.add(hangBranch);
-  }
-
-  worldGroup.add(tg);
-  return tg;
-}
-
-function createSpiderWithWeb(x, y, z) {
-  const wg = new THREE.Group();
-  wg.position.set(x, y, z);
-
-  // Sarang Laba-laba
-  const webTex = makeSpiderWebTexture();
-  const webMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.4, 2.4),
-    new THREE.MeshBasicMaterial({ map: webTex, transparent: true, side: THREE.DoubleSide })
-  );
-  wg.add(webMesh);
-
-  // Benang sutra vertikal + Laba-laba hitam 8 kaki
-  const thread = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.012, 0.012, 1.5, 4),
-    new THREE.MeshBasicMaterial({ color: 0xe2e8f0, transparent: true, opacity: 0.7 })
-  );
-  thread.position.y = -0.6;
-  wg.add(thread);
-
-  const spider = new THREE.Group();
-  const spMat = new THREE.MeshLambertMaterial({ color: 0x09090b });
-  const redEyeMat = new THREE.MeshBasicMaterial({ color: 0xf43f5e });
-  const abdomen = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), spMat);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.10, 8, 8), spMat);
-  head.position.set(0, -0.14, 0.08);
-  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.025, 6, 6), redEyeMat);
-  eyeL.position.set(-0.04, -0.16, 0.16);
-  const eyeR = eyeL.clone();
-  eyeR.position.x = 0.04;
-  spider.add(abdomen, head, eyeL, eyeR);
-
-  for (let side of [-1, 1]) {
-    for (let k = 0; k < 4; k++) {
-      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.025, 0.025), spMat);
-      leg.position.set(side * 0.18, -0.04 * k, 0);
-      leg.rotation.z = side * (0.45 - k * 0.18);
-      spider.add(leg);
-    }
-  }
-  spider.position.y = -1.1;
-  wg.add(spider);
-  worldGroup.add(wg);
-  hangingSpiders.push({ spider, thread, baseY: -1.1, phase: x * 1.3 });
-}
-
-function createCrow(x, y, z, flying = true) {
-  const cg = new THREE.Group();
-  cg.position.set(x, y, z);
-  const blackMat = new THREE.MeshLambertMaterial({ color: 0x09090b });
-  const beakMat = new THREE.MeshLambertMaterial({ color: 0xf59e0b });
-
-  const body = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.45, 7), blackMat);
-  body.rotation.z = -Math.PI / 2;
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.11, 8, 8), blackMat);
-  head.position.set(0.22, 0.08, 0);
-  const beak = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.14, 5), beakMat);
-  beak.rotation.z = -Math.PI / 2;
-  beak.position.set(0.34, 0.07, 0);
-
-  const wingL = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.02, 0.48), blackMat);
-  wingL.position.set(0, 0.05, 0.24);
-  const wingR = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.02, 0.48), blackMat);
-  wingR.position.set(0, 0.05, -0.24);
-
-  cg.add(body, head, beak, wingL, wingR);
-  worldGroup.add(cg);
-  crows.push({ group: cg, wingL, wingR, flying, baseY: y, phase: x * 0.9, dir: 1 });
-}
-
-function createHowlingWolf(x, z) {
-  const wg = new THREE.Group();
-  wg.position.set(x, 0.55, z);
-  const furMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
-  const eyeMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
-
-  // Bukit batu tempat srigala berdiri
-  const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.85, 0), new THREE.MeshLambertMaterial({ color: 0x27272a }));
-  rock.position.y = -0.35;
-  wg.add(rock);
-
-  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.42, 0.34), furMat);
-  torso.position.y = 0.48;
-  wg.add(torso);
-
-  const head = new THREE.Group();
-  head.position.set(-0.46, 0.72, 0);
-  const skull = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.26, 0.26), furMat);
-  const snout = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.16), furMat);
-  snout.position.set(-0.22, -0.04, 0);
-  const ear1 = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.16, 4), furMat);
-  ear1.position.set(0.04, 0.18, 0.08);
-  const ear2 = ear1.clone();
-  ear2.position.z = -0.08;
-  const eye = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 6), eyeMat);
-  eye.position.set(-0.12, 0.04, 0.13);
-  head.add(skull, snout, ear1, ear2, eye);
-  wg.add(head);
-
-  [[-0.28, 0.12], [-0.28, -0.12], [0.28, 0.12], [0.28, -0.12]].forEach(([lx, lz]) => {
-    const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.04, 0.44, 6), furMat);
-    leg.position.set(lx, 0.22, lz);
-    wg.add(leg);
-  });
-
-  worldGroup.add(wg);
-  wolves.push({ group: wg, head, phase: x });
-}
-
-function createGroundCritters(x, z, kind) {
-  const g = new THREE.Group();
-  g.position.set(x, 0.06, z);
-
-  if (kind === 'snake') {
-    const sMat = new THREE.MeshLambertMaterial({ color: 0x15803d });
-    const segs = [];
-    for (let i = 0; i < 7; i++) {
-      const seg = new THREE.Mesh(new THREE.SphereGeometry(0.09 - i * 0.008, 8, 8), sMat);
-      seg.position.x = i * 0.14;
-      g.add(seg);
-      segs.push(seg);
-    }
-    worldGroup.add(g);
-    snakes.push({ group: g, segs, minX: x - 1.8, maxX: x + 1.8, dir: -1, phase: x });
-  } else if (kind === 'centipede') {
-    const cMat = new THREE.MeshLambertMaterial({ color: 0x7f1d1d });
-    const segs = [];
-    for (let i = 0; i < 8; i++) {
-      const seg = new THREE.Mesh(new THREE.SphereGeometry(0.075, 7, 7), cMat);
-      seg.position.x = i * 0.11;
-      const legL = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, 0.22), cMat);
-      seg.add(legL);
-      g.add(seg);
-      segs.push(seg);
-    }
-    worldGroup.add(g);
-    centipedes.push({ group: g, segs, minX: x - 1.5, maxX: x + 1.5, dir: 1, phase: x });
-  } else {
-    // Kala jengking dengan capit & ekor sengat melengkung
-    const scMat = new THREE.MeshLambertMaterial({ color: 0x292524 });
-    const body = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.09, 0.18), scMat);
-    const clawL = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.05, 0.06), scMat);
-    clawL.position.set(-0.18, 0.02, 0.11);
-    const clawR = clawL.clone();
-    clawR.position.z = -0.11;
-    const tail1 = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.18, 0.07), scMat);
-    tail1.position.set(0.14, 0.11, 0);
-    const stinger = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.12, 5), new THREE.MeshBasicMaterial({ color: 0xf43f5e }));
-    stinger.position.set(0.08, 0.22, 0);
-    stinger.rotation.z = 0.8;
-    g.add(body, clawL, clawR, tail1, stinger);
-    worldGroup.add(g);
-    scorpions.push({ group: g, minX: x - 1.3, maxX: x + 1.3, dir: -1, phase: x });
-  }
+  fullMoonMesh = null;
+  wolfGroup = null;
 }
 
 function buildHorrorAdventureWorld(levelIdx) {
   clearWorldEntities();
-  const skyColors = [0x070a18, 0x0a0718, 0x120614];
-  scene.background = new THREE.Color(skyColors[levelIdx % skyColors.length]);
-  scene.fog.color.copy(scene.background);
+  const bgColors = [0x060916, 0x0b0718, 0x100512];
+  const bgCol = new THREE.Color(bgColors[levelIdx % bgColors.length]);
+  scene.background = bgCol;
+  scene.fog.color.copy(bgCol);
 
-  // 1. BULAN PURNAMA RAKSASA BERSINAR MISTERIUS
-  fullMoonGroup = new THREE.Group();
-  fullMoonGroup.position.set(6, 9.5, -24);
-  const moonDisk = new THREE.Mesh(
-    new THREE.SphereGeometry(3.4, 24, 24),
-    new THREE.MeshBasicMaterial({ color: 0xfef9c3 })
+  // 1. BULAN PURNAMA BESAR BERSINAR DI LANGIT MALAM
+  const moonGroup = new THREE.Group();
+  moonGroup.position.set(14, 11.5, -24);
+  const moonCore = new THREE.Mesh(
+    new THREE.SphereGeometry(3.4, 24, 20),
+    new THREE.MeshBasicMaterial({ color: levelIdx === 2 ? 0xfecdd3 : 0xfef9c3 })
   );
   const moonHalo = new THREE.Mesh(
-    new THREE.RingGeometry(3.5, 5.2, 32),
-    new THREE.MeshBasicMaterial({ color: 0xfde047, transparent: true, opacity: 0.20, side: THREE.DoubleSide })
+    new THREE.SphereGeometry(4.6, 20, 16),
+    new THREE.MeshBasicMaterial({
+      color: levelIdx === 2 ? 0xf43f5e : 0xfde047,
+      transparent: true,
+      opacity: 0.16
+    })
   );
-  fullMoonGroup.add(moonDisk, moonHalo);
-  worldGroup.add(fullMoonGroup);
+  moonGroup.add(moonCore, moonHalo);
+  worldGroup.add(moonGroup);
+  fullMoonMesh = moonGroup;
 
-  // 2. AWAN MALAM GELAP BERARAK DI LANGIT
-  const cloudMat = new THREE.MeshLambertMaterial({ color: 0x1e293b, transparent: true, opacity: 0.88 });
+  // 2. AWAN GELAP BERARAK MELINTASI BULAN
+  const cloudMat = new THREE.MeshLambertMaterial({ color: 0x1e243b, transparent: true, opacity: 0.85 });
   for (let i = 0; i < 12; i++) {
     const cg = new THREE.Group();
     const b1 = new THREE.Mesh(new THREE.SphereGeometry(1.05, 10, 8), cloudMat);
-    const b2 = new THREE.Mesh(new THREE.SphereGeometry(0.78, 10, 8), cloudMat);
-    b2.position.set(-0.9, -0.15, 0);
-    const b3 = new THREE.Mesh(new THREE.SphereGeometry(0.82, 10, 8), cloudMat);
-    b3.position.set(0.9, -0.15, 0);
+    b1.scale.set(1.8, 0.55, 0.8);
+    const b2 = new THREE.Mesh(new THREE.SphereGeometry(0.85, 10, 8), cloudMat);
+    b2.position.set(-1.1, -0.1, 0);
+    b2.scale.set(1.5, 0.5, 0.8);
+    const b3 = new THREE.Mesh(new THREE.SphereGeometry(0.85, 10, 8), cloudMat);
+    b3.position.set(1.1, -0.1, 0);
+    b3.scale.set(1.5, 0.5, 0.8);
     cg.add(b1, b2, b3);
-    cg.position.set(-8 + i * 5.2, 7.2 + (i % 3) * 1.2, -13 - (i % 2) * 4);
-    cg.userData = { speed: 0.32 + (i % 3) * 0.14 };
+    cg.position.set(-10 + i * 5.6, 7.6 + (i % 3) * 1.2, -13 - (i % 3) * 2.5);
+    cg.userData = { speed: 0.45 + (i % 4) * 0.15 };
     worldGroup.add(cg);
-    clouds.push(cg);
+    darkClouds.push(cg);
   }
 
-  // 3. TANAH PETUALANGAN BERLUMUT GELAP
+  // 3. TANAH PETUALANGAN MALAM GELAP & RUMPUT BERLUMUT
   const groundTex = makeDarkGroundTexture();
   groundTex.repeat.set(36, 2);
   const ground = new THREE.Mesh(
-    new THREE.BoxGeometry(58, 1.6, 9),
+    new THREE.BoxGeometry(58, 1.6, 8),
     new THREE.MeshLambertMaterial({ map: groundTex })
   );
   ground.position.set(18, -0.8, 0);
   ground.receiveShadow = true;
   worldGroup.add(ground);
 
-  // 4. POHON-POHON TINGGI MENYERAMKAN (TERMASUK POHON GANTUNG KUNTILANAK DI ARENA BOS)
-  const treeCoords = [
-    [-6.5, -3.5, 1.05, false],
-    [0.5, -4.2, 1.25, false],
-    [7.8, -3.8, 1.15, false],
-    [15.2, -4.4, 1.30, false],
-    [22.5, -3.6, 1.10, false],
-    [26.2, -3.4, 1.22, false],
-    [BOSS_HANG_TREE_X, -2.2, 1.28, true]
-  ];
-  treeCoords.forEach(([tx, tz, sc, hang]) => createTallSpookyTree(tx, tz, sc, hang));
+  // 4. POHON-POHON TINGGI MISTIS & DAHAN TEMPAT KUNTILANAK BERGELANTUNGAN
+  const trunkMat = new THREE.MeshLambertMaterial({ color: 0x1c1411 });
+  const foliageMat = new THREE.MeshLambertMaterial({ color: 0x091c16 });
+  const treeXs = [-7.5, -1.5, 4.2, 10.5, 17.5, 23.5, 29.0, 33.5, 39.2];
+  treeXs.forEach((tx, idx) => {
+    const tg = new THREE.Group();
+    const isBossHangTree = (tx === 33.5);
+    const h = isBossHangTree ? 7.8 : (6.2 + (idx % 3) * 1.4);
+    tg.position.set(tx, 0, isBossHangTree ? -1.4 : (-2.8 - (idx % 3) * 1.3));
 
-  // 5. LABA-LABA DENGAN SARANGNYA
-  createSpiderWithWeb(-3.2, 4.1, -1.6);
-  createSpiderWithWeb(11.2, 4.3, -1.8);
-  createSpiderWithWeb(25.4, 4.4, -1.7);
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.52, h, 10), trunkMat);
+    trunk.position.y = h * 0.5;
+    trunk.castShadow = true;
+    tg.add(trunk);
 
-  // 6. BURUNG GAGAK HITAM TERBANG & BERTENGGER
-  createCrow(-2.0, 5.4, -4.5, true);
-  createCrow(9.5, 6.1, -5.0, true);
-  createCrow(21.0, 5.6, -4.2, true);
-  createCrow(31.5, 6.2, -4.8, true);
+    // Dahan menjulur
+    const branchL = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.16, 2.4, 7), trunkMat);
+    branchL.position.set(-0.9, h * 0.68, 0.2);
+    branchL.rotation.z = 0.85;
+    const branchR = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.16, 2.6, 7), trunkMat);
+    branchR.position.set(0.95, h * 0.74, 0.2);
+    branchR.rotation.z = -0.85;
+    tg.add(branchL, branchR);
 
-  // 7. SRIGALA MELOLONG DI ATAS BATU LATAR
-  createHowlingWolf(4.2, -3.2);
-  createHowlingWolf(18.8, -3.5);
-  createHowlingWolf(30.5, -3.6);
+    // Dahan besar menjorok ke depan arena Bos tempat Kuntilanak bergelantungan!
+    if (isBossHangTree) {
+      const hangBranch = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.18, 3.2, 8), trunkMat);
+      hangBranch.position.set(0, 4.55, 0.9);
+      hangBranch.rotation.x = Math.PI / 2 - 0.12;
+      tg.add(hangBranch);
+      kuntiTreeBranchPos.set(tx, 4.35, 0);
+    }
 
-  // 8. BATU BESAR & RUMPUT LIAR BERGOYANG
-  const rockMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
-  const grassMat = new THREE.MeshLambertMaterial({ color: 0x15803d });
-  for (let gx = -7; gx <= 41; gx += 1.6) {
-    const blade = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.38, 4), grassMat);
-    blade.position.set(gx, 0.18, (gx % 3 === 0 ? 1.1 : -1.1));
-    worldGroup.add(blade);
-    grassBlades.push({ mesh: blade, phase: gx });
-  }
-  [-4.2, 3.8, 13.4, 23.0, 38.8].forEach((rx, i) => {
-    const boulder = new THREE.Mesh(new THREE.DodecahedronGeometry(0.55 + (i % 2) * 0.22, 0), rockMat);
-    boulder.position.set(rx, 0.25, -1.35);
-    boulder.castShadow = true;
-    worldGroup.add(boulder);
+    // Tajuk daun gelap rimbun
+    const crown1 = new THREE.Mesh(new THREE.DodecahedronGeometry(1.75, 1), foliageMat);
+    crown1.position.set(0, h + 0.3, 0);
+    const crown2 = new THREE.Mesh(new THREE.DodecahedronGeometry(1.3, 1), foliageMat);
+    crown2.position.set(-1.1, h - 0.2, 0.3);
+    const crown3 = new THREE.Mesh(new THREE.DodecahedronGeometry(1.3, 1), foliageMat);
+    crown3.position.set(1.1, h - 0.2, -0.2);
+    tg.add(crown1, crown2, crown3);
+
+    worldGroup.add(tg);
   });
 
-  // 9. ULAR, KELABANG & KALA JENGKING DI JALUR TANAH
-  createGroundCritters(1.8, 1.15, 'snake');
-  createGroundCritters(10.2, 1.25, 'centipede');
-  createGroundCritters(17.5, 1.10, 'scorpion');
-  createGroundCritters(28.5, 1.35, 'snake');
-  createGroundCritters(34.0, 1.35, 'scorpion');
+  // 5. SARANG LABA-LABA & LABA-LABA BERGELANTUNGAN
+  const webTex = makeSpiderWebTexture();
+  const webMat = new THREE.MeshBasicMaterial({ map: webTex, transparent: true, side: THREE.DoubleSide });
+  const spiderBodyMat = new THREE.MeshLambertMaterial({ color: 0x09090b });
+  const spiderEyeMat = new THREE.MeshBasicMaterial({ color: 0xf43f5e });
 
-  // 10. PIPA KERAMAT & BLOK MISTERI [?] ALA MARIO BROS
-  const pipeMat = new THREE.MeshLambertMaterial({ color: 0x14532d });
-  [2.5, 12.8, 21.2].forEach((px, idx) => {
-    const h = 1.15 + (idx % 2) * 0.5;
-    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.56, 0.56, h, 14), pipeMat);
+  [1.0, 11.2, 22.8, 31.2].forEach((wx, idx) => {
+    const webPlane = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 2.4), webMat);
+    webPlane.position.set(wx, 4.8 + (idx % 2) * 0.6, -2.2);
+    worldGroup.add(webPlane);
+
+    // Laba-laba turun naik di benang sutra
+    const sg = new THREE.Group();
+    const thread = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.012, 0.012, 2.2, 4),
+      new THREE.MeshBasicMaterial({ color: 0xcbd5e1, transparent: true, opacity: 0.5 })
+    );
+    thread.position.y = 1.1;
+    sg.add(thread);
+
+    const abdomen = new THREE.Mesh(new THREE.SphereGeometry(0.18, 10, 8), spiderBodyMat);
+    const headSp = new THREE.Mesh(new THREE.SphereGeometry(0.11, 8, 8), spiderBodyMat);
+    headSp.position.set(0, -0.14, 0.08);
+    const eyeSp = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 6), spiderEyeMat);
+    eyeSp.position.set(0, -0.15, 0.17);
+    sg.add(abdomen, headSp, eyeSp);
+
+    // 8 Kaki Laba-laba
+    for (let l = 0; l < 4; l++) {
+      [-1, 1].forEach((side) => {
+        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.025, 0.025), spiderBodyMat);
+        leg.position.set(side * 0.18, -0.05, (l - 1.5) * 0.06);
+        leg.rotation.z = side * 0.45;
+        sg.add(leg);
+      });
+    }
+
+    sg.position.set(wx + 0.3, 3.6, -1.8);
+    sg.userData = { baseY: 3.6, phase: idx * 1.7 };
+    worldGroup.add(sg);
+    hangingSpiders.push(sg);
+  });
+
+  // 6. BURUNG GAGAK HITAM TERBANG DI LANGIT MALAM
+  const crowMat = new THREE.MeshLambertMaterial({ color: 0x090d16 });
+  for (let i = 0; i < 6; i++) {
+    const cg = new THREE.Group();
+    const body = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.42, 6), crowMat);
+    body.rotation.z = -Math.PI / 2;
+    const wingL = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.03, 0.45), crowMat);
+    wingL.position.set(0, 0.04, -0.22);
+    const wingR = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.03, 0.45), crowMat);
+    wingR.position.set(0, 0.04, 0.22);
+    cg.add(body, wingL, wingR);
+    cg.position.set(-8 + i * 8.5, 5.2 + (i % 3) * 1.1, -5 - (i % 2) * 3);
+    cg.userData = { wingL, wingR, speed: 3.2 + (i % 3) * 0.8, phase: i * 1.3 };
+    worldGroup.add(cg);
+    flyingCrows.push(cg);
+  }
+
+  // 7. SRIGALA MELOLONG DI ATAS BUKIT BATU
+  const wolfContainer = new THREE.Group();
+  wolfContainer.position.set(25.2, 0, -4.6);
+  const cliffRock = new THREE.Mesh(
+    new THREE.DodecahedronGeometry(1.45, 0),
+    new THREE.MeshLambertMaterial({ color: 0x27272a })
+  );
+  cliffRock.position.y = 0.7;
+  cliffRock.scale.set(1.4, 1.0, 1.0);
+  wolfContainer.add(cliffRock);
+
+  const wolfBody = new THREE.Group();
+  wolfBody.position.set(0, 1.65, 0);
+  const wMat = new THREE.MeshLambertMaterial({ color: 0x1f2937 });
+  const wTorso = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.36, 0.30), wMat);
+  const wHead = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.28, 0.26), wMat);
+  wHead.position.set(-0.42, 0.26, 0);
+  wHead.rotation.z = -0.55; // Mendongak melolong ke bulan!
+  const wSnout = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.16), wMat);
+  wSnout.position.set(-0.62, 0.36, 0);
+  wSnout.rotation.z = -0.55;
+  const wEye = new THREE.Mesh(
+    new THREE.SphereGeometry(0.035, 6, 6),
+    new THREE.MeshBasicMaterial({ color: 0xfacc15 })
+  );
+  wEye.position.set(-0.46, 0.33, 0.13);
+  wolfBody.add(wTorso, wHead, wSnout, wEye);
+  wolfContainer.add(wolfBody);
+  worldGroup.add(wolfContainer);
+  wolfGroup = wolfBody;
+
+  // 8. ULAR MELATA, KELABANG & KALAJENGKING DI TANAH HUTAN
+  const snakeMat = new THREE.MeshLambertMaterial({ color: 0x15803d });
+  const centipedeMat = new THREE.MeshLambertMaterial({ color: 0x991b1b });
+  const scorpionMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
+
+  // Ular Berlekuk
+  [-3.2, 13.8, 22.4].forEach((sx, idx) => {
+    const sg = new THREE.Group();
+    const segs = [];
+    for (let k = 0; k < 7; k++) {
+      const seg = new THREE.Mesh(
+        new THREE.SphereGeometry(0.11 - k * 0.008, 8, 8),
+        k === 0 ? new THREE.MeshLambertMaterial({ color: 0x22c55e }) : snakeMat
+      );
+      seg.position.set(k * 0.18, 0.10, Math.sin(k * 0.9) * 0.14);
+      sg.add(seg);
+      segs.push(seg);
+    }
+    sg.position.set(sx, 0, idx % 2 === 0 ? 1.55 : -1.55);
+    worldGroup.add(sg);
+    crawlingCritters.push({ type: 'snake', group: sg, segs, minX: sx - 1.8, maxX: sx + 1.8, dir: -1, speed: 1.4 });
+  });
+
+  // Kelabang Merah Gelap
+  [3.8, 17.2].forEach((cx, idx) => {
+    const cg = new THREE.Group();
+    const segs = [];
+    for (let k = 0; k < 8; k++) {
+      const seg = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.08, 0.18), centipedeMat);
+      seg.position.set(k * 0.15, 0.06, 0);
+      cg.add(seg);
+      segs.push(seg);
+    }
+    cg.position.set(cx, 0, 1.75);
+    worldGroup.add(cg);
+    crawlingCritters.push({ type: 'centipede', group: cg, segs, minX: cx - 1.5, maxX: cx + 1.5, dir: 1, speed: 1.8 });
+  });
+
+  // Kalajengking Hitam Berekor Sengat
+  [7.8, 20.5].forEach((scx) => {
+    const scg = new THREE.Group();
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.12, 0.22), scorpionMat);
+    body.position.y = 0.09;
+    const tail = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.035, 6, 12, Math.PI * 1.2), scorpionMat);
+    tail.position.set(0.16, 0.22, 0);
+    const stinger = new THREE.Mesh(
+      new THREE.ConeGeometry(0.04, 0.12, 6),
+      new THREE.MeshBasicMaterial({ color: 0xf43f5e })
+    );
+    stinger.position.set(0.02, 0.35, 0);
+    stinger.rotation.z = 1.2;
+    scg.add(body, tail, stinger);
+    scg.position.set(scx, 0, 1.45);
+    worldGroup.add(scg);
+    crawlingCritters.push({ type: 'scorpion', group: scg, segs: [], minX: scx - 1.3, maxX: scx + 1.3, dir: -1, speed: 1.2 });
+  });
+
+  // 9. BATU BERLUMUT & RUMPUT BERGOYANG DI SEPANJANG JALAN
+  const rockMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+  for (let i = 0; i < 18; i++) {
+    const rx = -8 + i * 3.1;
+    const rz = i % 2 === 0 ? 2.1 : -2.1;
+    const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.32 + (i % 3) * 0.14, 0), rockMat);
+    rock.position.set(rx, 0.16, rz);
+    rock.scale.set(1.3, 0.75, 1.1);
+    worldGroup.add(rock);
+  }
+
+  const grassMat = new THREE.MeshLambertMaterial({ color: 0x15803d });
+  for (let i = 0; i < 42; i++) {
+    const gx = -8.5 + i * 1.32;
+    const gz = (i % 3 === 0) ? 1.85 : ((i % 3 === 1) ? -1.85 : 2.55);
+    const blade = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.42 + (i % 2) * 0.14, 4), grassMat);
+    blade.position.set(gx, 0.20, gz);
+    worldGroup.add(blade);
+    grassBlades.push({ mesh: blade, phase: i * 0.6 });
+  }
+
+  // 10. PIPA KERAMAT, BLOK MISTERI [?], KOIN EMAS & MINION HANTU ALA MARIO BROS
+  const pipeMat = new THREE.MeshLambertMaterial({ color: 0x166534 });
+  [2.0, 12.5, 21.5].forEach((px, idx) => {
+    const h = 1.2 + (idx % 2) * 0.55;
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.58, h, 16), pipeMat);
     body.position.set(px, h * 0.5, 0);
     body.castShadow = true;
-    const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.66, 0.66, 0.26, 14), pipeMat);
+    const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.68, 0.28, 16), pipeMat);
     rim.position.set(px, h + 0.08, 0);
     worldGroup.add(body, rim);
   });
@@ -2088,15 +2076,24 @@ function buildHorrorAdventureWorld(levelIdx) {
   const qTex = makeQuestionBlockTexture();
   const qMat = new THREE.MeshLambertMaterial({ map: qTex });
   const usedMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
+  const brickTex = makeDarkGroundTexture();
+  const brickMat = new THREE.MeshLambertMaterial({ map: brickTex });
+
   const blockConfigs = [
-    { x: -1.2, y: 2.75, reward: 'star' },
-    { x: 6.4, y: 2.75, reward: 'coin' },
-    { x: 16.0, y: 2.85, reward: 'heal' },
-    { x: 17.0, y: 2.85, reward: 'star' },
-    { x: 24.2, y: 2.75, reward: 'coin' }
+    { x: -1.2, y: 2.75, type: 'q', reward: 'star' },
+    { x: 5.5, y: 2.75, type: 'brick' },
+    { x: 6.45, y: 2.75, type: 'q', reward: 'coin' },
+    { x: 7.4, y: 2.75, type: 'brick' },
+    { x: 15.8, y: 2.85, type: 'q', reward: 'heal' },
+    { x: 16.75, y: 2.85, type: 'q', reward: 'star' },
+    { x: 24.0, y: 2.75, type: 'q', reward: 'coin' }
   ];
+
   blockConfigs.forEach((cfg) => {
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.92, 0.92), qMat);
+    const mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(0.92, 0.92, 0.92),
+      cfg.type === 'q' ? qMat : brickMat
+    );
     mesh.position.set(cfg.x, cfg.y, 0);
     mesh.castShadow = true;
     worldGroup.add(mesh);
@@ -2104,25 +2101,31 @@ function buildHorrorAdventureWorld(levelIdx) {
       mesh,
       x: cfg.x,
       baseY: cfg.y,
-      type: 'q',
-      reward: cfg.reward,
+      type: cfg.type,
+      reward: cfg.reward || 'coin',
       used: false,
       usedMat,
       bounceTimer: 0
     });
   });
 
-  // 11. KOIN EMAS BERPUTAR & MINION HANTU JALANAN
-  const coinGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.10, 14);
+  const coinGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.10, 16);
   coinGeo.rotateX(Math.PI / 2);
   const coinMat = new THREE.MeshStandardMaterial({
     color: 0xfacc15,
     emissive: 0xd97706,
-    emissiveIntensity: 0.5,
+    emissiveIntensity: 0.45,
     metalness: 0.8,
     roughness: 0.2
   });
-  [[-2.5, 1.1], [-1.8, 1.1], [5.5, 3.85], [6.4, 3.85], [7.3, 3.85], [10.4, 1.4], [16.5, 3.95], [19.6, 1.2]].forEach(([cx, cy]) => {
+
+  [
+    [-2.5, 1.1], [-1.8, 1.1],
+    [5.5, 3.85], [6.45, 3.85], [7.4, 3.85],
+    [9.8, 1.2], [10.6, 1.6], [11.4, 1.2],
+    [15.8, 3.95], [16.75, 3.95],
+    [19.2, 1.2], [20.0, 1.2]
+  ].forEach(([cx, cy]) => {
     const cm = new THREE.Mesh(coinGeo, coinMat);
     cm.position.set(cx, cy, 0);
     worldGroup.add(cm);
@@ -2130,7 +2133,7 @@ function buildHorrorAdventureWorld(levelIdx) {
   });
 
   const minionTypes = ['tuyul', 'pocong', 'tuyul'];
-  [8.8, 14.6, 19.6].forEach((mx, idx) => {
+  [8.8, 14.5, 19.6].forEach((mx, idx) => {
     const mType = minionTypes[idx % minionTypes.length];
     const rig = buildArticulatedGhostRig(mType, true);
     rig.root.position.set(mx, 0, 0);
@@ -2140,26 +2143,42 @@ function buildHorrorAdventureWorld(levelIdx) {
       rig,
       x: mx,
       y: 0,
-      minX: mx - 2.1,
-      maxX: mx + 2.1,
+      minX: mx - 2.2,
+      maxX: mx + 2.2,
       dir: -1,
       alive: true,
       squishTimer: 0
     });
   });
+
+  // Gerbang Keramat Arena Bos
+  const gateGroup = new THREE.Group();
+  gateGroup.position.set(32.5, 0, -2.6);
+  const pillarMat = new THREE.MeshLambertMaterial({ color: 0x1e1b4b });
+  const pL = new THREE.Mesh(new THREE.BoxGeometry(1.1, 4.8, 1.1), pillarMat);
+  pL.position.set(-4.5, 2.4, 0);
+  const pR = new THREE.Mesh(new THREE.BoxGeometry(1.1, 4.8, 1.1), pillarMat);
+  pR.position.set(4.5, 2.4, 0);
+  const topBeam = new THREE.Mesh(
+    new THREE.BoxGeometry(10.8, 0.85, 1.3),
+    new THREE.MeshLambertMaterial({ color: 0x9f1239 })
+  );
+  topBeam.position.set(0, 4.9, 0);
+  gateGroup.add(pL, pR, topBeam);
+  worldGroup.add(gateGroup);
 }
 
 /* ============================================================================
-   8. STATE PERMAINAN, SLOW-MOTION DEFEATED & KEMAMPUAN BOS UNIK
+   8. STATE PERMAINAN, KEMAMPUAN KHUSUS BOS & SLOW-MOTION DEFEATED
    ============================================================================ */
 const state = {
   screen: 'load',
   heroId: 'dhira',
-  levelIdx: 0, // 0 = Level 1 (Tuyul), 1 = Level 2 (Pocong), 2 = Level 3 (Kuntilanak)
+  levelIdx: 0,
   enemyId: 'tuyul',
   paused: false,
   inMatch: false,
-  phase: 'adventure',
+  phase: 'adventure', // 'adventure' (Mario Bros) -> 'boss' (Street Fighter)
   roundActive: false,
   roundOutcome: null,
   roundEndTimer: 0,
@@ -2175,7 +2194,8 @@ const state = {
   comboTimer: 0,
   hitStop: 0,
   shake: 0,
-  camPunch: 0
+  camPunch: 0,
+  ambientSoundTimer: 3.5
 };
 
 const player = {
@@ -2191,6 +2211,7 @@ const player = {
   atkCd: 0,
   atkAnim: 0,
   castAnim: 0,
+  secretCd: 0,
   landingAnim: 0,
   atkSide: 1,
   hurtAnim: 0,
@@ -2207,17 +2228,16 @@ const enemy = {
   hp: 820,
   maxHp: 820,
   aiState: 'advance',
-  aiTimer: 0.6,
+  aiTimer: 0.7,
   atkWindup: 0,
-  atkCooldown: 0.7,
+  atkCooldown: 0.75,
+  skillType: 'melee',
   hurtAnim: 0,
   hopPhase: 0,
-  // Kemampuan Khusus Bos:
-  flyTimer: 0,       // Pocong & Kuntilanak terbang
-  invisTimer: 0,     // Kuntilanak menghilang
-  hangTimer: 0,      // Kuntilanak bergelantungan di pohon
-  teleportCd: 3.5,   // Kuntilanak teleportasi
-  dashTimer: 0,      // Tuyul lari cepat kilat
+  flyTimer: 0,
+  invisTimer: 0,
+  hangTimer: 0,
+  dashTimer: 0,
   koVelY: 0,
   koRotZ: 0
 };
@@ -2236,22 +2256,22 @@ function rebuildActiveRigs() {
 }
 
 /* ============================================================================
-   9. EFEK CAHAYA WARNA-WARNI MENGGLEGAR, SEMBURAN API & GELOMBANG LENGKINGAN
+   9. EFEK CAHAYA WARNA-WARNI MENGGLEGAR, SEMBURAN API & GELOMBANG SUARA
    ============================================================================ */
 const projectiles = [];
 const particles = [];
 const shockwaves = [];
 const RAINBOW_PALETTE = [0xf43f5e, 0xf97316, 0xfacc15, 0x22c55e, 0x38bdf8, 0xa855f7, 0xec4899];
 
-function spawnShockwave3D(pos, colorHex, maxScale = 4.2, flat = false) {
+function spawnShockwave3D(pos, colorHex, maxScale = 4.2, ringRotateY = Math.PI / 4) {
   const ring = new THREE.Mesh(
     new THREE.TorusGeometry(0.55, 0.12, 10, 28),
     new THREE.MeshBasicMaterial({ color: colorHex, transparent: true, opacity: 0.92 })
   );
   ring.position.copy(pos);
-  ring.rotation.y = flat ? 0 : Math.PI / 4;
+  ring.rotation.y = ringRotateY;
   scene.add(ring);
-  shockwaves.push({ mesh: ring, scale: 0.4, maxScale, life: 0.52, maxLife: 0.52 });
+  shockwaves.push({ mesh: ring, scale: 0.4, maxScale, life: 0.48, maxLife: 0.48 });
 }
 
 function spawnThunderousRainbowBurst(pos, count = 18, epic = false) {
@@ -2283,16 +2303,16 @@ function spawnThunderousRainbowBurst(pos, count = 18, epic = false) {
 function spawn3DProjectile(opts) {
   let geo;
   if (opts.type === 'screech') {
-    geo = new THREE.TorusGeometry(0.75, 0.14, 10, 24);
+    geo = new THREE.TorusGeometry(0.58, 0.11, 8, 22);
   } else if (opts.type === 'fire') {
-    geo = new THREE.DodecahedronGeometry(opts.radius || 0.36, 1);
+    geo = new THREE.DodecahedronGeometry(opts.radius || 0.34, 0);
   } else {
-    geo = new THREE.SphereGeometry(opts.radius || 0.36, 12, 10);
+    geo = new THREE.SphereGeometry(opts.radius || 0.36, 14, 12);
   }
   const mat = new THREE.MeshBasicMaterial({ color: opts.color });
   const mesh = new THREE.Mesh(geo, mat);
-  mesh.position.copy(opts.pos);
   if (opts.type === 'screech') mesh.rotation.y = Math.PI / 2;
+  mesh.position.copy(opts.pos);
   scene.add(mesh);
   projectiles.push({ ...opts, mesh, life: 2.3 });
 }
@@ -2304,21 +2324,13 @@ function clearEffects() {
 }
 
 /* ============================================================================
-   10. HUD & BANNER DRAMATIS
+   10. HUD, BANNER & TULISAN KOMIK LUCU
    ============================================================================ */
 const vignetteEl = document.getElementById('vignette');
 const bannerEl = document.getElementById('banner');
-const comicPopEl = document.getElementById('comic-pop');
+const comicEl = document.getElementById('comic-pop');
 let bannerTimeout = null;
 let comicTimeout = null;
-
-function showComicPop(words) {
-  const word = Array.isArray(words) ? words[Math.floor(Math.random() * words.length)] : words;
-  comicPopEl.textContent = word;
-  comicPopEl.classList.add('show');
-  if (comicTimeout) clearTimeout(comicTimeout);
-  comicTimeout = setTimeout(() => comicPopEl.classList.remove('show'), 480);
-}
 
 function showBanner(text, ms = 1200, isKO = false) {
   bannerEl.textContent = text;
@@ -2329,6 +2341,14 @@ function showBanner(text, ms = 1200, isKO = false) {
     bannerEl.classList.remove('show');
     bannerEl.classList.remove('ko');
   }, ms);
+}
+
+function showComicPop(words) {
+  const txt = words[Math.floor(Math.random() * words.length)];
+  comicEl.textContent = txt;
+  comicEl.classList.add('show');
+  if (comicTimeout) clearTimeout(comicTimeout);
+  comicTimeout = setTimeout(() => comicEl.classList.remove('show'), 520);
 }
 
 function flashVignette(cls, ms = 240) {
@@ -2359,7 +2379,7 @@ function updateHUD() {
 
   document.getElementById('hudCoins').textContent = '🪙 ' + state.coins;
   document.getElementById('hudRoundTxt').textContent =
-    state.phase === 'adventure' ? ('LEVEL ' + (state.levelIdx + 1) + '/3') : ('LV.' + (state.levelIdx + 1) + ' • R' + state.roundNum);
+    state.phase === 'adventure' ? ('LV.' + (state.levelIdx + 1) + ' HUTAN') : ('LV.' + (state.levelIdx + 1) + ' • R' + state.roundNum);
   document.getElementById('hudScoreTxt').textContent = 'SKOR ' + state.score;
   const tEl = document.getElementById('hudTimer');
   tEl.textContent = Math.ceil(state.timer);
@@ -2376,7 +2396,7 @@ function addCombo() {
 }
 
 /* ============================================================================
-   11. AKSI PERTARUNGAN, SLOW-MOTION DEFEATED & PROGRESI 3 LEVEL OTOMATIS
+   11. AKSI PERTARUNGAN, JURUS RAHASIA, SLOW-MOTION DEFEATED & SIKLUS LEVEL
    ============================================================================ */
 function triggerPlayerJump() {
   if (!state.inMatch || !state.roundActive || state.paused) return;
@@ -2388,7 +2408,12 @@ function triggerPlayerJump() {
 }
 
 function triggerPlayerAttack() {
-  if (!state.inMatch || !state.roundActive || state.paused || player.blocking) return;
+  if (!state.inMatch || !state.roundActive || state.paused) return;
+  // Tombol rahasia kombinasi: Tahan + Serang memicu Jurus Rahasia!
+  if (player.blocking) {
+    triggerSecretJurus();
+    return;
+  }
   if (player.atkCd > 0) return;
   const hero = HEROES[state.heroId];
   player.atkCd = 0.28;
@@ -2405,7 +2430,7 @@ function triggerPlayerAttack() {
     }
   }
 
-  // Jika Kuntilanak sedang menghilang total, serangan fisik tidak mengenai sasaran
+  // Jika Kuntilanak sedang menghilang total, serangan fisik meleset
   if (enemy.invisTimer > 0) return;
 
   const dx = enemy.pos.x - player.pos.x;
@@ -2413,7 +2438,7 @@ function triggerPlayerAttack() {
   const dist = Math.abs(dx);
   const dy = Math.abs(enemy.pos.y - player.pos.y);
 
-  if (inFront && dist <= hero.atkRange && dy <= 2.1) {
+  if (inFront && dist <= hero.atkRange && dy <= 2.45) {
     applyDamageToEnemy(hero.atkDmg, false);
   }
 }
@@ -2447,6 +2472,60 @@ function triggerPlayerSpecial() {
   });
 }
 
+// JURUS RAHASIA NUSANTARA (Tombol Rahasia: L / V atau Tahan + Serang)
+function triggerSecretJurus() {
+  if (!state.inMatch || !state.roundActive || state.paused) return;
+  if (player.secretCd > 0) {
+    showBanner('⏳ JURUS RAHASIA SIAP DALAM ' + Math.ceil(player.secretCd) + 'D', 700);
+    return;
+  }
+  const hero = HEROES[state.heroId];
+  const bonusStars = Math.min(2, Math.floor(player.energy));
+  player.energy = Math.max(0, player.energy - bonusStars);
+  player.secretCd = 7.0;
+  player.atkCd = 0.55;
+  player.atkAnim = 0.42;
+  player.castAnim = 0.56;
+  player.invuln = 1.1;
+  state.camPunch = 1.15;
+  state.shake = 0.58;
+
+  // Jurus Rahasia langsung membongkar Kuntilanak yang menghilang atau bergelantungan di pohon!
+  if (enemy.invisTimer > 0 || enemy.hangTimer > 0) {
+    enemy.invisTimer = 0;
+    enemy.hangTimer = 0;
+    if (enemy.rig) enemy.rig.root.visible = true;
+  }
+
+  const secretTitle = state.heroId === 'iyen'
+    ? '⚡ JURUS RAHASIA: PETIR DEWA LANGIT! ⚡'
+    : '🌈 JURUS RAHASIA: BADAI NAGA PELANGI! 🌈';
+  showBanner(secretTitle, 1450);
+  showComicPop(['JURUS RAHASIA!!', 'SUPER ULTRA!!', 'MENGGELEGAR!!']);
+  flashVignette('flash-rainbow', 480);
+  audioEngine.playSFX('sfx_jurus', 1.0);
+  audioEngine.playSFX('sfx_win', 0.85);
+  updateHUD();
+
+  const origin = new THREE.Vector3(player.pos.x + player.facing * 0.9, player.pos.y + 1.25, 0);
+  spawnThunderousRainbowBurst(origin, 28, true);
+
+  const dmgPerOrb = (hero.spcDmg * 0.46) + bonusStars * 45;
+  [-0.26, -0.13, 0, 0.13, 0.26].forEach((angleY, idx) => {
+    const dirVec = new THREE.Vector3(player.facing, angleY, 0).normalize();
+    spawn3DProjectile({
+      owner: 'player',
+      type: 'orb',
+      pos: origin.clone(),
+      dir: dirVec,
+      speed: 17.5 + idx * 0.5,
+      dmg: dmgPerOrb,
+      radius: 0.58,
+      color: RAINBOW_PALETTE[idx % RAINBOW_PALETTE.length]
+    });
+  });
+}
+
 function defeatMinion(m) {
   m.alive = false;
   m.squishTimer = 0.45;
@@ -2455,7 +2534,7 @@ function defeatMinion(m) {
   player.energy = Math.min(3, player.energy + 0.35);
   state.shake = 0.22;
   flashVignette('flash-rainbow', 200);
-  showComicPop(['PENYET!!', 'GEPENG!!', 'MANTAP!!']);
+  showComicPop(['PENYET!!', 'PLOK!!', 'BYAR!!']);
   spawnThunderousRainbowBurst(new THREE.Vector3(m.x, 0.7, 0), 14, false);
   audioEngine.playSFX('sfx_stomp', 0.85);
   addCombo();
@@ -2466,7 +2545,6 @@ function applyDamageToEnemy(rawDmg, isSpecial) {
   if (!state.roundActive) return;
   enemy.hp = Math.max(0, enemy.hp - Math.round(rawDmg));
   enemy.hurtAnim = isSpecial ? 0.42 : 0.26;
-  // Memukul bos membatalkan posisi bergelantungan di pohon
   enemy.hangTimer = 0;
   enemy.invisTimer = 0;
   if (enemy.rig) enemy.rig.root.visible = true;
@@ -2480,7 +2558,7 @@ function applyDamageToEnemy(rawDmg, isSpecial) {
   state.hitStop = isSpecial ? 0.075 : 0.04;
   state.shake = isSpecial ? 0.45 : 0.24;
   addCombo();
-  showComicPop(isSpecial ? ['GELEGAR!!', 'DUARRR!!', 'AMPUN BANG!!'] : ['BUAGH!!', 'CIAT!!', 'WADUH!!']);
+  showComicPop(isSpecial ? ['GELEGAR!!', 'SUPER DUAR!!', 'KABOOM!!'] : ['BUAGH!!', 'DZIGH!!', 'AMPUN BANG!!']);
   flashVignette('flash-rainbow', isSpecial ? 280 : 160);
   spawnThunderousRainbowBurst(new THREE.Vector3(enemy.pos.x, enemy.pos.y + 1.2, 0), isSpecial ? 24 : 12, isSpecial);
   audioEngine.playSFX('sfx_hit', 0.9);
@@ -2509,6 +2587,7 @@ function applyDamageToPlayer(rawDmg, canBlock) {
     state.shake = 0.32;
     state.combo = 0;
     document.getElementById('combo-pop').classList.remove('show');
+    showComicPop(['ADUH!!', 'WADUH!!', 'AWAS!!']);
     flashVignette('hurt', 250);
     audioEngine.playSFX('sfx_hit', 0.8);
     spawnThunderousRainbowBurst(new THREE.Vector3(player.pos.x, player.pos.y + 1.1, 0), 10, false);
@@ -2522,14 +2601,14 @@ function applyDamageToPlayer(rawDmg, canBlock) {
 
 function enterBossBattlePhase() {
   if (state.phase === 'boss') return;
-  const lvl = LEVELS[state.levelIdx];
   state.phase = 'boss';
+  const lvl = LEVELS[state.levelIdx];
   document.getElementById('enemyHudBox').classList.remove('standby');
   document.getElementById('hudEnemyState').textContent = 'BOS SIAGA!';
   flashVignette('flash-rainbow', 360);
   spawnThunderousRainbowBurst(new THREE.Vector3(enemy.pos.x, 1.4, 0), 22, true);
   audioEngine.playSFX('sfx_jurus', 0.9);
-  showBanner('⚔️ ' + lvl.name.toUpperCase() + ' MUNCUL!', 1500);
+  showBanner('⚔️ ' + lvl.name.toUpperCase() + ' MUNCUL! ⚔️', 1500);
   updateHUD();
 }
 
@@ -2559,6 +2638,7 @@ function setupRoundPositions(keepAdventureProgress = false) {
   player.atkCd = 0;
   player.atkAnim = 0;
   player.castAnim = 0;
+  player.secretCd = 0;
   player.landingAnim = 0;
   player.hurtAnim = 0;
   player.invuln = 0;
@@ -2573,13 +2653,13 @@ function setupRoundPositions(keepAdventureProgress = false) {
   enemy.aiState = 'advance';
   enemy.aiTimer = 0.6;
   enemy.atkWindup = 0;
-  enemy.atkCooldown = 0.7;
+  enemy.atkCooldown = 0.75;
+  enemy.skillType = 'melee';
   enemy.hurtAnim = 0;
   enemy.hopPhase = 0;
   enemy.flyTimer = 0;
   enemy.invisTimer = 0;
   enemy.hangTimer = 0;
-  enemy.teleportCd = 3.2;
   enemy.dashTimer = 0;
   enemy.koVelY = 0;
   enemy.koRotZ = 0;
@@ -2617,32 +2697,36 @@ function setupRoundPositions(keepAdventureProgress = false) {
   showBanner(
     keepAdventureProgress
       ? ('RONDE ' + state.roundNum + ' — LAWAN!')
-      : (lvl.diffLabel + ' — ' + lvl.name.toUpperCase()),
-    1450
+      : (lvl.diffLabel + ' — MAJU KE KANAN!'),
+    1400
   );
 }
 
 function startNewMatch() {
-  const lvl = LEVELS[state.levelIdx] || LEVELS[0];
-  state.enemyId = lvl.enemyId;
-  state.roundNum = 1;
-  state.heroWins = 0;
-  state.enemyWins = 0;
-  state.paused = false;
-  player.energy = 1;
+  try {
+    const lvl = LEVELS[state.levelIdx] || LEVELS[0];
+    state.enemyId = lvl.enemyId;
+    state.roundNum = 1;
+    state.heroWins = 0;
+    state.enemyWins = 0;
+    state.paused = false;
+    player.energy = 1;
 
-  buildHorrorAdventureWorld(state.levelIdx);
-  rebuildActiveRigs();
+    buildHorrorAdventureWorld(state.levelIdx);
+    rebuildActiveRigs();
 
-  document.getElementById('scr-menu').hidden = true;
-  document.getElementById('scr-pause').hidden = true;
-  document.getElementById('scr-result').hidden = true;
-  document.getElementById('hud').hidden = false;
-  document.getElementById('controls').classList.remove('off');
+    document.getElementById('scr-menu').hidden = true;
+    document.getElementById('scr-pause').hidden = true;
+    document.getElementById('scr-result').hidden = true;
+    document.getElementById('hud').hidden = false;
+    document.getElementById('controls').classList.remove('off');
 
-  state.screen = 'play';
-  audioEngine.startMusic();
-  setupRoundPositions(false);
+    state.screen = 'play';
+    audioEngine.startMusic();
+    setupRoundPositions(false);
+  } catch (err) {
+    console.error('Gagal memulai level:', err);
+  }
 }
 
 function endRound(heroWon) {
@@ -2656,6 +2740,11 @@ function endRound(heroWon) {
   state.camPunch = 1.6;
   clearEffects();
 
+  if (enemy.rig) {
+    enemy.rig.root.visible = true;
+    enemy.rig.root.rotation.x = 0;
+  }
+
   vignetteEl.classList.add('slowmo');
   audioEngine.playSFX('sfx_ko', 1.0);
 
@@ -2664,12 +2753,7 @@ function endRound(heroWon) {
     state.score += 800 + Math.ceil(state.timer) * 12;
     enemy.koVelY = 9.5;
     enemy.koRotZ = 0;
-    enemy.invisTimer = 0;
-    enemy.hangTimer = 0;
-    if (enemy.rig) {
-      enemy.rig.root.visible = true;
-      enemy.rig.setDizzy(true);
-    }
+    if (enemy.rig) enemy.rig.setDizzy(true);
     spawnThunderousRainbowBurst(new THREE.Vector3(enemy.pos.x, enemy.pos.y + 1.2, 0), 34, true);
     showBanner('💥 DEFEATED! K.O.! 💥', 2200, true);
     setTimeout(() => {
@@ -2691,7 +2775,7 @@ function endRound(heroWon) {
 }
 
 function advanceAfterRound() {
-  vignetteEl.classList.remove('slowmo', 'screech');
+  vignetteEl.classList.remove('slowmo');
   state.timeScale = 1.0;
 
   if (state.heroWins >= 2 || state.enemyWins >= 2) {
@@ -2705,9 +2789,9 @@ function advanceAfterRound() {
       const nextLvl = LEVELS[state.levelIdx + 1];
       document.getElementById('resKicker').textContent = lvl.diffLabel + ' SELESAI';
       document.getElementById('resTitle').textContent = lvl.name.toUpperCase() + ' DEFEATED!';
-      document.getElementById('resSub').textContent = 'Berikutnya: ' + nextLvl.diffLabel + ' (' + nextLvl.name + ')';
+      document.getElementById('resSub').textContent = 'Selanjutnya: ' + nextLvl.diffLabel + ' (' + nextLvl.name + ')';
       document.getElementById('resDesc').textContent = 'Skor: ' + state.score + ' • Koin: ' + state.coins;
-      document.getElementById('btnNext').textContent = '▶ LANJUT KE LEVEL ' + (state.levelIdx + 2);
+      document.getElementById('btnNext').textContent = '▶ LANJUT KE LEVEL ' + nextLvl.level;
       document.getElementById('btnNext').dataset.action = 'next_level';
     } else if (wonMatch) {
       document.getElementById('resKicker').textContent = 'TAMAT • SEMUA HANTU KALAH!';
@@ -2715,13 +2799,13 @@ function advanceAfterRound() {
       document.getElementById('resSub').textContent = 'Tuyul, Pocong & Kuntilanak Berhasil Dikalahkan!';
       document.getElementById('resDesc').textContent = 'Skor Akhir: ' + state.score + ' • Total Koin: ' + state.coins;
       document.getElementById('btnNext').textContent = '↻ MAIN DARI LEVEL 1';
-      document.getElementById('btnNext').dataset.action = 'replay';
+      document.getElementById('btnNext').dataset.action = 'restart_all';
     } else {
       document.getElementById('resKicker').textContent = lvl.diffLabel;
       document.getElementById('resTitle').textContent = 'DEFEATED!';
       document.getElementById('resSub').textContent = lvl.name + ' Berhasil Mengalahkanmu!';
       document.getElementById('resDesc').textContent = 'Skor: ' + state.score + ' • Koin: ' + state.coins;
-      document.getElementById('btnNext').textContent = '↻ ULANGI LEVEL ' + (state.levelIdx + 1);
+      document.getElementById('btnNext').textContent = '↻ ULANGI LEVEL ' + lvl.level;
       document.getElementById('btnNext').dataset.action = 'retry_level';
     }
     document.getElementById('scr-result').hidden = false;
@@ -2732,7 +2816,7 @@ function advanceAfterRound() {
 }
 
 /* ============================================================================
-   12. INPUT KEYBOARD & POINTER SENTUH (ANTI-MACET)
+   12. INPUT KEYBOARD & POINTER SENTUH
    ============================================================================ */
 const keys = {};
 const joyVec = { x: 0, y: 0 };
@@ -2758,6 +2842,7 @@ window.addEventListener('keydown', (e) => {
   if (e.code === 'KeyW' || e.code === 'ArrowUp' || e.code === 'Space') triggerPlayerJump();
   if (e.code === 'KeyJ' || e.code === 'KeyZ' || e.code === 'Enter') triggerPlayerAttack();
   if (e.code === 'KeyK' || e.code === 'KeyX') triggerPlayerSpecial();
+  if (e.code === 'KeyL' || e.code === 'KeyV') triggerSecretJurus();
   if (e.code === 'KeyP' || e.code === 'Escape') togglePause();
 });
 
@@ -2828,60 +2913,64 @@ bindActionBtn('btnJurus', () => triggerPlayerSpecial());
 bindActionBtn('btnBlock', () => { keys['TouchBlock'] = true; }, () => { keys['TouchBlock'] = false; });
 
 /* ============================================================================
-   13. ANIMASI LINGKUNGAN HOROR & KEMAMPUAN KHUSUS 3 BOS HANTU
+   13. PEMBARUAN ALAM HOROR, PETUALANGAN MARIO & KEMAMPUAN KHUSUS 3 BOS HANTU
    ============================================================================ */
-function updateHorrorEnvironment(dt, elapsed) {
-  if (fullMoonGroup) {
-    fullMoonGroup.position.x = camera.position.x + 5.5;
+function updateWildlifeAndAdventure(dt, elapsed) {
+  if (fullMoonMesh) {
+    fullMoonMesh.position.x = camera.position.x + 8;
   }
-  for (const cg of clouds) {
+
+  for (const cg of darkClouds) {
     cg.position.x += cg.userData.speed * dt;
     if (cg.position.x > 50) cg.position.x = -14;
   }
-  for (const cr of crows) {
-    const flap = Math.sin(elapsed * 14 + cr.phase) * 0.65;
-    cr.wingL.rotation.x = flap;
-    cr.wingR.rotation.x = -flap;
-    if (cr.flying) {
-      cr.group.position.x += cr.dir * 2.6 * dt;
-      cr.group.position.y = cr.baseY + Math.sin(elapsed * 3.5 + cr.phase) * 0.35;
-      if (cr.group.position.x > 46) { cr.dir = -1; cr.group.rotation.y = Math.PI; }
-      if (cr.group.position.x < -10) { cr.dir = 1; cr.group.rotation.y = 0; }
+
+  for (const cr of flyingCrows) {
+    cr.position.x += cr.userData.speed * dt;
+    cr.position.y += Math.sin(elapsed * 4 + cr.userData.phase) * 0.45 * dt;
+    const flap = Math.sin(elapsed * 16 + cr.userData.phase) * 0.55;
+    cr.userData.wingL.rotation.x = flap;
+    cr.userData.wingR.rotation.x = -flap;
+    if (cr.position.x > 48) cr.position.x = -12;
+  }
+
+  for (const sp of hangingSpiders) {
+    sp.position.y = sp.userData.baseY + Math.sin(elapsed * 2.2 + sp.userData.phase) * 0.65;
+  }
+
+  if (wolfGroup) {
+    wolfGroup.rotation.z = Math.sin(elapsed * 1.8) * 0.06;
+  }
+
+  for (const gb of grassBlades) {
+    gb.mesh.rotation.z = Math.sin(elapsed * 3.2 + gb.phase) * 0.14;
+  }
+
+  for (const crit of crawlingCritters) {
+    crit.group.position.x += crit.dir * crit.speed * dt;
+    if (crit.group.position.x <= crit.minX) {
+      crit.group.position.x = crit.minX;
+      crit.dir = 1;
+      crit.group.rotation.y = Math.PI;
+    } else if (crit.group.position.x >= crit.maxX) {
+      crit.group.position.x = crit.maxX;
+      crit.dir = -1;
+      crit.group.rotation.y = 0;
+    }
+    if (crit.type === 'snake') {
+      crit.segs.forEach((s, idx) => {
+        s.position.z = Math.sin(elapsed * 9 + idx * 0.9) * 0.14;
+      });
     }
   }
-  for (const sp of hangingSpiders) {
-    const bob = Math.sin(elapsed * 2.6 + sp.phase) * 0.45;
-    sp.spider.position.y = sp.baseY + bob;
-    sp.thread.scale.y = 1.0 - bob * 0.55;
-  }
-  for (const wf of wolves) {
-    // Srigala mendongak melolong ke bulan secara berkala
-    const howl = Math.max(0, Math.sin(elapsed * 1.4 + wf.phase));
-    wf.head.rotation.z = -howl * 0.55;
-  }
-  for (const sn of snakes) {
-    sn.group.position.x += sn.dir * 1.35 * dt;
-    if (sn.group.position.x < sn.minX) { sn.dir = 1; sn.group.rotation.y = Math.PI; }
-    if (sn.group.position.x > sn.maxX) { sn.dir = -1; sn.group.rotation.y = 0; }
-    sn.segs.forEach((seg, idx) => {
-      seg.position.z = Math.sin(elapsed * 8 + idx * 0.9 + sn.phase) * 0.14;
-    });
-  }
-  for (const cp of centipedes) {
-    cp.group.position.x += cp.dir * 1.8 * dt;
-    if (cp.group.position.x < cp.minX) { cp.dir = 1; cp.group.rotation.y = Math.PI; }
-    if (cp.group.position.x > cp.maxX) { cp.dir = -1; cp.group.rotation.y = 0; }
-    cp.segs.forEach((seg, idx) => {
-      seg.rotation.y = Math.sin(elapsed * 18 + idx) * 0.35;
-    });
-  }
-  for (const sc of scorpions) {
-    sc.group.position.x += sc.dir * 1.45 * dt;
-    if (sc.group.position.x < sc.minX) { sc.dir = 1; sc.group.rotation.y = Math.PI; }
-    if (sc.group.position.x > sc.maxX) { sc.dir = -1; sc.group.rotation.y = 0; }
-  }
-  for (const gb of grassBlades) {
-    gb.mesh.rotation.z = Math.sin(elapsed * 2.8 + gb.phase) * 0.18;
+
+  // Suara alam horor berkala (gagak & lolongan srigala)
+  if (state.inMatch && state.roundActive) {
+    state.ambientSoundTimer -= dt;
+    if (state.ambientSoundTimer <= 0) {
+      state.ambientSoundTimer = 6.5 + Math.random() * 4.5;
+      audioEngine.playSFX(Math.random() < 0.5 ? 'sfx_crow' : 'sfx_wolf', 0.45);
+    }
   }
 
   // Blok Misteri [?]
@@ -2905,7 +2994,7 @@ function updateHorrorEnvironment(dt, elapsed) {
       audioEngine.playSFX('sfx_bonk', 0.85);
       spawnThunderousRainbowBurst(new THREE.Vector3(b.x, b.baseY + 0.6, 0), 12, false);
 
-      if (!b.used) {
+      if (b.type === 'q' && !b.used) {
         b.used = true;
         b.mesh.material = b.usedMat;
         state.coins += 3;
@@ -2914,7 +3003,7 @@ function updateHorrorEnvironment(dt, elapsed) {
           player.energy = Math.min(3, player.energy + 1);
           showBanner('★ BINTANG JURUS +1! ★', 950);
         } else if (b.reward === 'heal') {
-          player.hp = Math.min(player.maxHp, player.hp + 280);
+          player.hp = Math.min(player.maxHp, player.hp + 260);
           showBanner('💚 TENAGA PULIH! 💚', 950);
         } else {
           showBanner('🪙 BONUS KOIN +3! 🪙', 900);
@@ -2969,7 +3058,7 @@ function updateHorrorEnvironment(dt, elapsed) {
       continue;
     }
 
-    m.x += m.dir * 2.4 * dt;
+    m.x += m.dir * 2.3 * dt;
     if (m.x <= m.minX) { m.x = m.minX; m.dir = 1; }
     if (m.x >= m.maxX) { m.x = m.maxX; m.dir = -1; }
     m.y = m.type === 'pocong' ? Math.abs(Math.sin(elapsed * 7 + m.x)) * 0.45 : Math.abs(Math.sin(elapsed * 14)) * 0.08;
@@ -2982,7 +3071,7 @@ function updateHorrorEnvironment(dt, elapsed) {
         player.onGround = false;
         defeatMinion(m);
       } else if (Math.abs(player.pos.y - m.y) < 0.85) {
-        applyDamageToPlayer(40, true);
+        applyDamageToPlayer(45, true);
       }
     }
   }
@@ -2993,6 +3082,7 @@ function updatePlayer(dt, elapsed) {
   if (player.atkCd > 0) player.atkCd = Math.max(0, player.atkCd - dt);
   if (player.atkAnim > 0) player.atkAnim = Math.max(0, player.atkAnim - dt);
   if (player.castAnim > 0) player.castAnim = Math.max(0, player.castAnim - dt);
+  if (player.secretCd > 0) player.secretCd = Math.max(0, player.secretCd - dt);
   if (player.landingAnim > 0) player.landingAnim = Math.max(0, player.landingAnim - dt);
   if (player.hurtAnim > 0) player.hurtAnim = Math.max(0, player.hurtAnim - dt);
   if (player.invuln > 0) player.invuln = Math.max(0, player.invuln - dt);
@@ -3201,12 +3291,16 @@ function updatePlayer(dt, elapsed) {
     heroRig.pelvis.position.y = 0.88 + Math.abs(Math.cos(phase)) * 0.06;
     heroRig.torso.rotation.x = 0.16;
     heroRig.torso.rotation.y = sL * 0.14;
+
     heroRig.legL.hip.rotation.x = sL * 0.78;
     heroRig.legL.knee.rotation.x = Math.max(0.08, -sL * 0.95 + 0.35);
+
     heroRig.legR.hip.rotation.x = sR * 0.78;
     heroRig.legR.knee.rotation.x = Math.max(0.08, -sR * 0.95 + 0.35);
+
     heroRig.armL.shoulder.rotation.x = sR * 0.82 - 0.25;
     heroRig.armL.elbow.rotation.x = -0.75 - Math.max(0, -sR) * 0.55;
+
     heroRig.armR.shoulder.rotation.x = sL * 0.82 - 0.25;
     heroRig.armR.elbow.rotation.x = -0.75 - Math.max(0, -sL) * 0.55;
   } else {
@@ -3224,10 +3318,10 @@ function updatePlayer(dt, elapsed) {
 }
 
 /* ============================================================================
-   AI KHUSUS 3 LEVEL:
-   - LV.1 TUYUL: Lari cepat kilat & gesit
-   - LV.2 POCONG: Meloncat-loncat, Terbang tinggi, & Menyemburkan Api
-   - LV.3 KUNTILANAK: Terbang, Menghilang, Bergelantungan di Pohon, Teleportasi & Lengkingan
+   AI KHUSUS 3 BOS HANTU:
+   - Level 1 Tuyul: Lari sangat cepat (dash kilat)
+   - Level 2 Pocong: Meloncat-loncat, terbang melayang & menyemburkan api
+   - Level 3 Kuntilanak: Terbang, menghilang, bergelantungan di pohon, teleport & lengkingan
    ============================================================================ */
 function updateEnemyAI(dt, elapsed) {
   if (!enemy.rig) return;
@@ -3237,43 +3331,61 @@ function updateEnemyAI(dt, elapsed) {
   if (enemy.atkCooldown > 0) enemy.atkCooldown = Math.max(0, enemy.atkCooldown - dt);
   if (enemy.flyTimer > 0) enemy.flyTimer = Math.max(0, enemy.flyTimer - dt);
   if (enemy.dashTimer > 0) enemy.dashTimer = Math.max(0, enemy.dashTimer - dt);
-  if (enemy.hangTimer > 0) enemy.hangTimer = Math.max(0, enemy.hangTimer - dt);
 
   if (enemy.invisTimer > 0) {
     enemy.invisTimer = Math.max(0, enemy.invisTimer - dt);
-    enemy.rig.root.visible = false;
+    enemy.rig.root.visible = enemy.invisTimer <= 0;
     if (enemy.invisTimer <= 0) {
-      enemy.rig.root.visible = true;
-      spawnThunderousRainbowBurst(new THREE.Vector3(enemy.pos.x, enemy.pos.y + 1.2, 0), 14, false);
+      // Muncul mendadak di belakang atau dekat pemain!
+      const side = Math.random() < 0.5 ? -1 : 1;
+      enemy.pos.x = Math.max(BOSS_ARENA_MIN_X, Math.min(BOSS_ARENA_MAX_X, player.pos.x + side * 3.0));
+      spawnThunderousRainbowBurst(new THREE.Vector3(enemy.pos.x, 1.3, 0), 12, false);
+      audioEngine.playSFX('sfx_teleport', 0.8);
+    }
+  }
+
+  if (enemy.hangTimer > 0) {
+    enemy.hangTimer = Math.max(0, enemy.hangTimer - dt);
+    enemy.pos.x += (kuntiTreeBranchPos.x - enemy.pos.x) * Math.min(1, dt * 8);
+    enemy.pos.y += (kuntiTreeBranchPos.y - enemy.pos.y) * Math.min(1, dt * 8);
+    enemy.rig.root.rotation.x = Math.PI; // Bergelantungan terbalik di dahan pohon!
+    enemy.rig.root.rotation.z = Math.sin(elapsed * 4) * 0.14;
+    if (enemy.hangTimer <= 0) {
+      enemy.rig.root.rotation.x = 0;
+      enemy.pos.y = 0.4;
+      spawnShockwave3D(enemy.pos, 0xf43f5e, 3.0);
     }
   } else {
-    enemy.rig.root.visible = true;
+    enemy.rig.root.rotation.x = 0;
   }
 
   const dx = player.pos.x - enemy.pos.x;
   const dist = Math.abs(dx);
-  if (dist > 0.2 && enemy.hangTimer <= 0) enemy.facing = dx >= 0 ? 1 : -1;
+  if (dist > 0.2) enemy.facing = dx >= 0 ? 1 : -1;
 
-  // Reset rotasi sebelum pose
-  enemy.rig.root.rotation.x = 0;
-  enemy.rig.root.rotation.z = 0;
-  enemy.rig.root.scale.set(1, 1, 1);
+  if (state.roundActive && state.phase === 'boss' && enemy.hurtAnim <= 0 && enemy.hangTimer <= 0) {
+    // Label status skill bos di HUD
+    if (enemy.invisTimer > 0) {
+      document.getElementById('hudEnemyState').textContent = 'MENGHILANG!';
+    } else if (enemy.flyTimer > 0) {
+      document.getElementById('hudEnemyState').textContent = 'TERBANG!';
+    } else if (enemy.atkWindup > 0) {
+      document.getElementById('hudEnemyState').textContent = 'JURUS HANTU!';
+    } else {
+      document.getElementById('hudEnemyState').textContent = dist < 2.8 ? 'SERANG DEKAT' : 'MENGEJAR';
+    }
 
-  if (state.roundActive && state.phase === 'boss' && enemy.hurtAnim <= 0) {
-    // --- LEVEL 1: TUYUL (LARI CEPAT) ---
-    if (state.enemyId === 'tuyul') {
-      document.getElementById('hudEnemyState').textContent =
-        enemy.dashTimer > 0 ? '⚡ LARI KILAT!' : 'LINCAH';
-
-      if (enemy.atkWindup > 0) {
-        enemy.atkWindup -= dt;
-        if (enemy.atkWindup <= 0) {
-          if (dist < 2.2) {
+    if (enemy.atkWindup > 0) {
+      enemy.atkWindup -= dt;
+      if (enemy.atkWindup <= 0) {
+        if (state.enemyId === 'tuyul') {
+          // LEVEL 1 TUYUL: Lari cepat kilat + lempar bongkahan emas
+          if (enemy.skillType === 'dash') {
+            enemy.dashTimer = 0.45;
+            audioEngine.playSFX('sfx_tuyul', 0.85);
+            spawnShockwave3D(new THREE.Vector3(enemy.pos.x, 0.7, 0), 0xfacc15, 2.5);
+          } else if (dist < 2.4) {
             applyDamageToPlayer(lvl.atkDmg, true);
-            if (!player.blocking) {
-              player.energy = Math.max(0, player.energy - 0.30);
-              updateHUD();
-            }
           } else {
             spawn3DProjectile({
               owner: 'enemy',
@@ -3285,166 +3397,113 @@ function updateEnemyAI(dt, elapsed) {
               radius: 0.30,
               color: 0xfacc15
             });
+            audioEngine.playSFX('sfx_tuyul', 0.8);
           }
-          audioEngine.playSFX('sfx_tuyul', 0.85);
-          enemy.atkCooldown = 1.25;
-        }
-      } else {
-        enemy.aiTimer -= dt;
-        if (enemy.aiTimer <= 0) {
-          enemy.aiTimer = 0.5 + Math.random() * 0.55;
-          if (Math.random() < 0.45) enemy.dashTimer = 0.55; // Ledakan lari cepat!
-          enemy.aiState = dist > 2.2 ? (Math.random() < 0.78 ? 'advance' : 'retreat') : 'retreat';
-        }
-        const speedMult = enemy.dashTimer > 0 ? 1.75 : 1.05;
-        if (enemy.aiState === 'advance') {
-          enemy.pos.x += enemy.facing * lvl.speed * speedMult * dt;
-        } else {
-          enemy.pos.x -= enemy.facing * lvl.speed * 0.75 * dt;
-        }
-        enemy.pos.x = Math.max(BOSS_ARENA_MIN_X, Math.min(BOSS_ARENA_MAX_X, enemy.pos.x));
-
-        if (enemy.atkCooldown <= 0 && (dist < 2.3 || (dist < 8.5 && Math.random() < 0.025))) {
-          enemy.atkWindup = 0.34;
-        }
-      }
-    }
-
-    // --- LEVEL 2: POCONG (MELONCAT-LONCAT, DAPAT TERBANG & MENYEMBURKAN API) ---
-    else if (state.enemyId === 'pocong') {
-      document.getElementById('hudEnemyState').textContent =
-        enemy.atkWindup > 0 ? '🔥 SEMBUR API!' : (enemy.flyTimer > 0 ? '🦇 TERBANG!' : 'MELONCAT');
-
-      if (enemy.atkWindup > 0) {
-        enemy.atkWindup -= dt;
-        if (enemy.atkWindup <= 0) {
-          // Skill Menyemburkan Api Kubur (3 bola api beruntun!)
-          const fireY = enemy.pos.y + 1.55;
-          for (let fIdx = 0; fIdx < 3; fIdx++) {
-            const spreadY = enemy.flyTimer > 0 ? (-0.28 - fIdx * 0.08) : ((fIdx - 1) * 0.08);
-            const dirVec = new THREE.Vector3(enemy.facing, spreadY, 0).normalize();
+        } else if (state.enemyId === 'pocong') {
+          // LEVEL 2 POCONG: Terbang melayang & Semburan Api Beruntun!
+          if (enemy.skillType === 'fire') {
+            audioEngine.playSFX('sfx_pocong_fire', 0.9);
+            showComicPop(['SEMBURAN API!!', 'PANAS!!']);
+            for (let fIdx = 0; fIdx < 3; fIdx++) {
+              setTimeout(() => {
+                if (!state.roundActive) return;
+                spawn3DProjectile({
+                  owner: 'enemy',
+                  type: 'fire',
+                  pos: new THREE.Vector3(enemy.pos.x + enemy.facing * 0.65, enemy.pos.y + 1.55, 0),
+                  dir: new THREE.Vector3(enemy.facing, (fIdx - 1) * 0.08, 0).normalize(),
+                  speed: 12.2 + fIdx * 0.9,
+                  dmg: lvl.spcDmg * 0.65,
+                  radius: 0.36,
+                  color: fIdx % 2 === 0 ? 0xf97316 : 0xef4444
+                });
+              }, fIdx * 110);
+            }
+          } else if (dist < 2.5 && Math.abs(player.pos.y - enemy.pos.y) < 1.3) {
+            applyDamageToPlayer(lvl.atkDmg, true);
+          } else {
+            enemy.flyTimer = 2.6;
+          }
+        } else if (state.enemyId === 'kuntilanak') {
+          // LEVEL 3 KUNTILANAK: Gelombang Suara Melengking!
+          if (enemy.skillType === 'screech') {
+            audioEngine.playSFX('sfx_screech', 0.95);
+            flashVignette('screech', 340);
+            showComicPop(['HIIIHIIII!!', 'SUARA MELENGKING!!']);
+            state.shake = 0.36;
             spawn3DProjectile({
               owner: 'enemy',
-              type: 'fire',
-              pos: new THREE.Vector3(enemy.pos.x + enemy.facing * (0.65 + fIdx * 0.35), fireY, 0),
-              dir: dirVec,
-              speed: 12.2 + fIdx * 1.1,
-              dmg: lvl.spcDmg * 0.65,
-              radius: 0.38,
-              color: fIdx === 1 ? 0xfacc15 : 0xf97316
+              type: 'screech',
+              pos: new THREE.Vector3(enemy.pos.x + enemy.facing * 0.75, enemy.pos.y + 1.55, 0),
+              dir: new THREE.Vector3(enemy.facing, 0, 0),
+              speed: 13.8,
+              dmg: lvl.spcDmg,
+              radius: 0.56,
+              color: 0xf43f5e
             });
+          } else if (dist < 2.6) {
+            applyDamageToPlayer(lvl.atkDmg, true);
           }
-          spawnThunderousRainbowBurst(new THREE.Vector3(enemy.pos.x + enemy.facing * 0.7, fireY, 0), 12, false);
-          audioEngine.playSFX('sfx_pocong_fire', 0.92);
-          state.shake = 0.26;
-          enemy.atkCooldown = 1.45;
         }
-      } else {
-        enemy.aiTimer -= dt;
-        if (enemy.aiTimer <= 0) {
-          enemy.aiTimer = 0.75 + Math.random() * 0.75;
-          // Secara berkala Pocong melayang terbang di udara!
-          if (enemy.flyTimer <= 0 && Math.random() < 0.38) {
-            enemy.flyTimer = 2.6;
-            spawnShockwave3D(new THREE.Vector3(enemy.pos.x, 0.2, 0), 0xa855f7, 2.8);
-          }
-          enemy.aiState = dist > 2.5 ? 'advance' : 'retreat';
-        }
-        const moveSpd = enemy.flyTimer > 0 ? lvl.speed * 1.25 : lvl.speed * 0.88;
-        if (enemy.aiState === 'advance') {
-          enemy.pos.x += enemy.facing * moveSpd * dt;
-        } else {
-          enemy.pos.x -= enemy.facing * moveSpd * 0.65 * dt;
-        }
-        enemy.pos.x = Math.max(BOSS_ARENA_MIN_X, Math.min(BOSS_ARENA_MAX_X, enemy.pos.x));
+        enemy.atkCooldown = state.enemyId === 'kuntilanak' ? 1.15 : 1.32;
+      }
+    } else {
+      enemy.aiTimer -= dt;
+      if (enemy.aiTimer <= 0) {
+        enemy.aiTimer = 0.55 + Math.random() * 0.65;
+        const r = Math.random();
+        if (dist > 2.4) enemy.aiState = r < lvl.aiAggro ? 'advance' : 'retreat';
+        else enemy.aiState = r < 0.74 ? 'attack' : 'retreat';
 
-        if (enemy.atkCooldown <= 0 && dist < 9.5 && Math.random() < 0.032) {
-          enemy.atkWindup = 0.48;
+        // Kemampuan pergerakan khusus masing-masing Bos:
+        if (state.enemyId === 'pocong' && enemy.flyTimer <= 0 && Math.random() < 0.34) {
+          enemy.flyTimer = 2.8; // Pocong terbang melayang!
+        } else if (state.enemyId === 'kuntilanak') {
+          const kRoll = Math.random();
+          if (kRoll < 0.22 && enemy.invisTimer <= 0) {
+            // Menghilang dalam kabut!
+            enemy.invisTimer = 1.65;
+            spawnThunderousRainbowBurst(new THREE.Vector3(enemy.pos.x, 1.3, 0), 10, false);
+            audioEngine.playSFX('sfx_teleport', 0.75);
+          } else if (kRoll < 0.40) {
+            // Bergelantungan di dahan pohon tinggi!
+            enemy.hangTimer = 2.1;
+            document.getElementById('hudEnemyState').textContent = 'DI ATAS POHON!';
+          } else if (kRoll < 0.58) {
+            // Teleportasi mendadak ke sisi lain pemain!
+            const side = player.facing === 1 ? -1 : 1;
+            enemy.pos.x = Math.max(BOSS_ARENA_MIN_X, Math.min(BOSS_ARENA_MAX_X, player.pos.x + side * 3.2));
+            spawnShockwave3D(new THREE.Vector3(enemy.pos.x, 1.3, 0), 0xa855f7, 2.8);
+            audioEngine.playSFX('sfx_teleport', 0.8);
+          }
         }
       }
-    }
 
-    // --- LEVEL 3: KUNTILANAK (TERBANG, MENGHILANG, BERGELANTUNGAN DI POHON, TELEPORTASI & GELOMBANG SUARA MELENGKING) ---
-    else if (state.enemyId === 'kuntilanak') {
-      enemy.teleportCd = Math.max(0, enemy.teleportCd - dt);
-      document.getElementById('hudEnemyState').textContent =
-        enemy.atkWindup > 0 ? '🔊 LENGKINGAN!' :
-        (enemy.hangTimer > 0 ? '🌳 DI POHON' :
-        (enemy.invisTimer > 0 ? '👻 MENGHILANG' : '🦇 TERBANG'));
+      const speedMult = enemy.dashTimer > 0 ? 2.15 : 1.0;
+      if (enemy.aiState === 'advance' || enemy.dashTimer > 0) {
+        enemy.pos.x += enemy.facing * lvl.speed * speedMult * dt;
+      } else if (enemy.aiState === 'retreat') {
+        enemy.pos.x -= enemy.facing * lvl.speed * 0.55 * dt;
+      }
+      enemy.pos.x = Math.max(BOSS_ARENA_MIN_X, Math.min(BOSS_ARENA_MAX_X, enemy.pos.x));
+      enemy.pos.z = 0;
 
-      if (enemy.atkWindup > 0) {
-        enemy.atkWindup -= dt;
-        if (enemy.atkWindup <= 0) {
-          // Skill Gelombang Suara Melengking (Sonic Screech Wave!)
-          const screamPos = new THREE.Vector3(enemy.pos.x + enemy.facing * 0.75, enemy.pos.y + 1.55, 0);
-          const aimY = enemy.pos.y > 1.5 ? -0.35 : 0;
-          const dirVec = new THREE.Vector3(enemy.facing, aimY, 0).normalize();
-          spawn3DProjectile({
-            owner: 'enemy',
-            type: 'screech',
-            pos: screamPos,
-            dir: dirVec,
-            speed: 14.5,
-            dmg: lvl.spcDmg,
-            radius: 0.75,
-            color: 0xf43f5e
-          });
-          spawnShockwave3D(screamPos, 0xf43f5e, 4.8);
-          flashVignette('screech', 280);
-          audioEngine.playSFX('sfx_screech', 0.95);
-          state.shake = 0.34;
-          enemy.atkCooldown = 1.35;
-        }
-      } else {
-        enemy.aiTimer -= dt;
-        if (enemy.aiTimer <= 0) {
-          enemy.aiTimer = 0.8 + Math.random() * 0.7;
-          const roll = Math.random();
+      // Tabrakan saat Tuyul dash cepat
+      if (enemy.dashTimer > 0 && dist < 1.15 && Math.abs(player.pos.y - enemy.pos.y) < 1.0) {
+        applyDamageToPlayer(lvl.atkDmg, true);
+        enemy.dashTimer = 0;
+      }
 
-          // 1. Teleportasi kilat
-          if (enemy.teleportCd <= 0 && roll < 0.30) {
-            spawnThunderousRainbowBurst(new THREE.Vector3(enemy.pos.x, enemy.pos.y + 1.2, 0), 14, false);
-            const targetX = player.pos.x + (player.pos.x > 32 ? -4.2 : 4.2);
-            enemy.pos.x = Math.max(BOSS_ARENA_MIN_X + 0.5, Math.min(BOSS_ARENA_MAX_X - 0.5, targetX));
-            enemy.pos.y = 0.6 + Math.random() * 1.6;
-            enemy.teleportCd = 3.8;
-            enemy.hangTimer = 0;
-            spawnThunderousRainbowBurst(new THREE.Vector3(enemy.pos.x, enemy.pos.y + 1.2, 0), 14, false);
-            audioEngine.playSFX('sfx_teleport', 0.9);
-            enemy.atkWindup = 0.42;
-          }
-          // 2. Menghilang sesaat
-          else if (enemy.invisTimer <= 0 && roll < 0.52) {
-            enemy.invisTimer = 1.45;
-            spawnShockwave3D(new THREE.Vector3(enemy.pos.x, enemy.pos.y + 1.2, 0), 0xa855f7, 3.0);
-            audioEngine.playSFX('sfx_teleport', 0.75);
-          }
-          // 3. Bergelantungan di dahan Pohon Keramat tinggi
-          else if (enemy.hangTimer <= 0 && roll < 0.72) {
-            enemy.hangTimer = 2.3;
-          } else {
-            enemy.aiState = dist > 2.8 ? 'advance' : 'retreat';
-          }
-        }
-
-        if (enemy.hangTimer > 0) {
-          // Terbang menuju & bergelantungan di dahan pohon tinggi!
-          enemy.pos.x += (BOSS_HANG_TREE_X - 1.4 - enemy.pos.x) * Math.min(1, dt * 5);
-          enemy.pos.y += (BOSS_HANG_TREE_Y - enemy.pos.y) * Math.min(1, dt * 5);
-        } else {
-          // Terbang melayang dinamis
-          const desiredY = 0.55 + Math.abs(Math.sin(elapsed * 2.4)) * 1.65;
-          enemy.pos.y += (desiredY - enemy.pos.y) * Math.min(1, dt * 4);
-          if (enemy.aiState === 'advance') {
-            enemy.pos.x += enemy.facing * lvl.speed * 0.92 * dt;
-          } else {
-            enemy.pos.x -= enemy.facing * lvl.speed * 0.68 * dt;
-          }
-        }
-        enemy.pos.x = Math.max(BOSS_ARENA_MIN_X, Math.min(BOSS_ARENA_MAX_X, enemy.pos.x));
-
-        if (enemy.atkCooldown <= 0 && dist < 10.5 && Math.random() < 0.036) {
-          enemy.atkWindup = 0.46;
+      if (enemy.atkCooldown <= 0 && enemy.invisTimer <= 0) {
+        if (state.enemyId === 'tuyul' && (dist < 2.3 || Math.random() < 0.035)) {
+          enemy.skillType = dist > 3.2 ? 'dash' : 'throw';
+          enemy.atkWindup = 0.30;
+        } else if (state.enemyId === 'pocong' && (dist < 2.5 || Math.random() < 0.032)) {
+          enemy.skillType = dist > 2.6 ? 'fire' : 'melee';
+          enemy.atkWindup = 0.44;
+        } else if (state.enemyId === 'kuntilanak' && (dist < 2.6 || Math.random() < 0.04)) {
+          enemy.skillType = dist > 2.6 ? 'screech' : 'melee';
+          enemy.atkWindup = 0.42;
         }
       }
     }
@@ -3453,8 +3512,8 @@ function updateEnemyAI(dt, elapsed) {
   const targetEnemyYaw = enemy.facing === 1 ? (Math.PI / 2 - 0.18) : (-Math.PI / 2 + 0.18);
   enemy.yaw += (targetEnemyYaw - enemy.yaw) * Math.min(1, dt * 14);
   enemy.rig.root.rotation.y = enemy.yaw;
+  enemy.rig.root.scale.set(1, 1, 1);
 
-  // ANIMASI SLOW-MOTION DEFEATED BOS HANTU
   if (state.roundOutcome === 'hero_win') {
     enemy.pos.y = Math.max(0.24, enemy.pos.y + enemy.koVelY * dt);
     enemy.koVelY -= 20.0 * dt;
@@ -3468,13 +3527,14 @@ function updateEnemyAI(dt, elapsed) {
     return;
   }
 
-  // Pose Animasi Khas Masing-masing Hantu
+  // Animasi gerakan spesifik 3 Bos Hantu
   if (state.enemyId === 'tuyul') {
-    const freq = enemy.dashTimer > 0 ? 28 : 18;
-    const runCycle = Math.sin(elapsed * freq);
+    const runCycle = Math.sin(elapsed * 22);
     enemy.pos.y = Math.abs(runCycle) * 0.16;
-    enemy.rig.root.rotation.x = enemy.dashTimer > 0 ? 0.34 : 0.15;
-    if (enemy.rig.parts.head) enemy.rig.parts.head.rotation.y = Math.sin(elapsed * 7) * 0.26;
+    enemy.rig.root.rotation.x = enemy.dashTimer > 0 ? 0.38 : 0.16;
+    if (enemy.rig.parts.head) {
+      enemy.rig.parts.head.rotation.y = Math.sin(elapsed * 7.5) * 0.28;
+    }
     if (enemy.rig.parts.legL && enemy.rig.parts.legR) {
       enemy.rig.parts.legL.hip.rotation.x = runCycle * 0.95;
       enemy.rig.parts.legL.knee.rotation.x = Math.max(0.1, -runCycle * 0.95);
@@ -3482,7 +3542,7 @@ function updateEnemyAI(dt, elapsed) {
       enemy.rig.parts.legR.knee.rotation.x = Math.max(0.1, runCycle * 0.95);
     }
     if (enemy.rig.parts.armL && enemy.rig.parts.armR) {
-      const shakeGold = enemy.atkWindup > 0 ? -1.1 : Math.sin(elapsed * 16) * 0.42;
+      const shakeGold = enemy.atkWindup > 0 ? -1.1 : Math.sin(elapsed * 16) * 0.38;
       enemy.rig.parts.armL.shoulder.rotation.x = shakeGold;
       enemy.rig.parts.armL.elbow.rotation.x = -0.95;
       enemy.rig.parts.armR.shoulder.rotation.x = -shakeGold * 0.85;
@@ -3490,33 +3550,35 @@ function updateEnemyAI(dt, elapsed) {
     }
   } else if (state.enemyId === 'pocong') {
     if (enemy.flyTimer > 0) {
-      // Melayang terbang di udara!
-      const targetFlyY = 2.65 + Math.sin(elapsed * 4.5) * 0.25;
+      // Pocong terbang melayang di udara!
+      const targetFlyY = 1.65 + Math.sin(elapsed * 4.5) * 0.25;
       enemy.pos.y += (targetFlyY - enemy.pos.y) * Math.min(1, dt * 6);
       enemy.rig.root.rotation.x = 0.42;
+      enemy.rig.root.rotation.z = Math.sin(elapsed * 4) * 0.08;
     } else {
-      enemy.hopPhase += dt * 8.2;
+      // Pocong meloncat-loncat tinggi!
+      enemy.hopPhase += dt * 8.4;
       const sinHop = Math.sin(enemy.hopPhase);
-      const hopY = Math.abs(sinHop) * 0.62;
+      const hopY = Math.abs(sinHop) * 0.78;
       enemy.pos.y = hopY;
-      const stretch = hopY > 0.12 ? (hopY * 0.18) : -0.09;
+      const stretch = hopY > 0.14 ? (hopY * 0.16) : -0.09;
       enemy.rig.root.scale.set(1 - stretch * 0.45, 1 + stretch, 1 - stretch * 0.45);
-      enemy.rig.root.rotation.z = sinHop * 0.11;
-      enemy.rig.root.rotation.x = enemy.atkWindup > 0 ? 0.38 : 0.10;
+      enemy.rig.root.rotation.z = sinHop * 0.12;
+      enemy.rig.root.rotation.x = enemy.atkWindup > 0 ? 0.36 : 0.10;
     }
   } else if (state.enemyId === 'kuntilanak') {
-    if (enemy.hangTimer > 0) {
-      // Bergelantungan terbalik di dahan pohon!
-      enemy.rig.root.rotation.z = Math.PI;
-    } else {
-      enemy.rig.root.rotation.x = enemy.atkWindup > 0 ? 0.36 : 0.14;
+    if (enemy.hangTimer <= 0) {
+      // Kuntilanak selalu terbang melayang anggun & menyeramkan!
+      const hoverY = 0.55 + Math.sin(elapsed * 3.6) * 0.28;
+      enemy.pos.y += (hoverY - enemy.pos.y) * Math.min(1, dt * 6);
+      enemy.rig.root.rotation.x = enemy.atkWindup > 0 ? 0.38 : 0.16;
       enemy.rig.root.rotation.z = Math.sin(elapsed * 2.5) * 0.08;
     }
     if (enemy.rig.parts.head) {
-      enemy.rig.parts.head.rotation.z = Math.sin(elapsed * 3.1) * 0.22;
+      enemy.rig.parts.head.rotation.z = Math.sin(elapsed * 3.1) * 0.24;
     }
     if (enemy.rig.parts.armL && enemy.rig.parts.armR) {
-      const reach = enemy.hangTimer > 0 ? -2.6 : (enemy.atkWindup > 0 ? -1.5 : -0.35 + Math.sin(elapsed * 3.2) * 0.16);
+      const reach = enemy.atkWindup > 0 ? -1.55 : -0.45 + Math.sin(elapsed * 3.4) * 0.18;
       enemy.rig.parts.armL.shoulder.rotation.x = reach;
       enemy.rig.parts.armL.elbow.rotation.x = -0.45;
       enemy.rig.parts.armR.shoulder.rotation.x = reach + 0.12;
@@ -3527,13 +3589,15 @@ function updateEnemyAI(dt, elapsed) {
   if (enemy.hurtAnim > 0) {
     enemy.rig.root.rotation.z = Math.sin(elapsed * 55) * 0.26;
     enemy.rig.root.rotation.x = -0.24;
+  } else if (state.enemyId === 'tuyul') {
+    enemy.rig.root.rotation.z = 0;
   }
   enemy.rig.root.position.copy(enemy.pos);
 }
 
 function updateEffectsAndProjectiles(dt, elapsed) {
-  colorLightL.intensity += (1.2 - colorLightL.intensity) * Math.min(1, dt * 6);
-  colorLightR.intensity += (1.2 - colorLightR.intensity) * Math.min(1, dt * 6);
+  colorLightL.intensity += (1.1 - colorLightL.intensity) * Math.min(1, dt * 6);
+  colorLightR.intensity += (1.1 - colorLightR.intensity) * Math.min(1, dt * 6);
   colorLightL.position.x = camera.position.x - 4.5;
   colorLightR.position.x = camera.position.x + 4.5;
 
@@ -3547,12 +3611,12 @@ function updateEffectsAndProjectiles(dt, elapsed) {
     p.life -= dt;
     p.pos.addScaledVector(p.dir, p.speed * dt);
     p.mesh.position.copy(p.pos);
-
     if (p.type === 'screech') {
-      const grow = 1 + (2.3 - p.life) * 1.4;
+      const grow = 1 + (2.3 - p.life) * 0.9;
       p.mesh.scale.setScalar(grow);
     } else {
       p.mesh.rotation.y += dt * 10;
+      p.mesh.rotation.x += dt * 8;
     }
 
     let hit = false;
@@ -3567,22 +3631,21 @@ function updateEffectsAndProjectiles(dt, elapsed) {
       if (!hit && enemy.invisTimer <= 0) {
         const dx = Math.abs(p.pos.x - enemy.pos.x);
         const dy = Math.abs(p.pos.y - (enemy.pos.y + 1.1));
-        if (dx < p.radius + 0.65 && dy < 1.6) {
+        if (dx < p.radius + 0.65 && dy < 1.8) {
           applyDamageToEnemy(p.dmg, true);
           hit = true;
         }
       }
     } else {
       const dx = Math.abs(p.pos.x - player.pos.x);
-      const dy = Math.abs(p.pos.y - (player.pos.y + 1.0));
-      const yThresh = p.type === 'screech' ? 1.45 : 1.05;
-      if (dx < p.radius + 0.45 && dy < yThresh) {
+      const dy = Math.abs(p.pos.y - (player.pos.y + 1.1));
+      if (dx < p.radius + 0.48 && dy < 1.2) {
         applyDamageToPlayer(p.dmg, true);
         hit = true;
       }
     }
 
-    if (hit || p.life <= 0 || Math.abs(p.pos.x - player.pos.x) > 18) {
+    if (hit || p.life <= 0 || Math.abs(p.pos.x - player.pos.x) > 19) {
       scene.remove(p.mesh);
       projectiles.splice(i, 1);
     }
@@ -3642,15 +3705,15 @@ function updateCamera(dt, elapsed) {
       const midX = (player.pos.x + enemy.pos.x) * 0.5;
       const span = Math.abs(player.pos.x - enemy.pos.x);
       targetX = Math.max(27.0, Math.min(37.0, midX));
-      const baseZ = Math.max(8.6, Math.min(13.5, 7.6 + span * 0.52));
+      const baseZ = Math.max(8.4, Math.min(13.2, 7.5 + span * 0.5));
       targetZ = (baseZ * aspectFactor) - state.camPunch;
-      targetY = 2.45 + Math.max(player.pos.y, enemy.pos.y) * 0.28 + (aspectFactor - 1) * 0.65;
+      targetY = 2.35 + Math.max(player.pos.y, enemy.pos.y) * 0.25 + (aspectFactor - 1) * 0.65;
     }
   } else {
-    // Panggung showcase horor di layar judul game
-    targetX = Math.sin(elapsed * 0.3) * 1.4;
-    targetY = 2.75 + (aspectFactor - 1) * 0.7;
-    targetZ = 10.2 * aspectFactor;
+    targetX = Math.sin(elapsed * 0.35) * 1.4;
+    targetY = 2.5 + (aspectFactor - 1) * 0.6;
+    targetZ = 9.2 * aspectFactor;
+    lookAtY = 1.25;
   }
 
   if (state.shake > 0) state.shake = Math.max(0, state.shake - dt * 1.8);
@@ -3668,7 +3731,7 @@ function updateCamera(dt, elapsed) {
 }
 
 /* ============================================================================
-   14. LOOP UTAMA (60 FPS + SLOW-MOTION DEFEATED)
+   14. LOOP UTAMA (SLOW-MOTION DEFEATED & ANTI-MACET)
    ============================================================================ */
 let lastTime = performance.now();
 let totalElapsed = 0;
@@ -3689,7 +3752,6 @@ function animate(now) {
     totalElapsed += dt;
 
     audioEngine.tickMusic(totalElapsed);
-    updateHorrorEnvironment(dt, totalElapsed);
 
     if (state.inMatch && !state.paused) {
       if (state.hitStop > 0) {
@@ -3715,19 +3777,19 @@ function animate(now) {
           }
         }
 
+        updateWildlifeAndAdventure(dt, totalElapsed);
         updatePlayer(dt, totalElapsed);
         updateEnemyAI(dt, totalElapsed);
         updateEffectsAndProjectiles(dt, totalElapsed);
       }
     } else if (!state.inMatch) {
-      // Showcase karakter utama & Tuyul Level 1 di latar layar judul game
-      heroRig.root.position.set(-2.2, 0, 0);
-      heroRig.root.rotation.set(0, 0.28, 0);
+      updateWildlifeAndAdventure(realDt, totalElapsed);
+      heroRig.root.position.set(-1.9, Math.abs(Math.sin(totalElapsed * 3.5)) * 0.14, 0);
+      heroRig.root.rotation.set(0, 0.22, 0);
       heroRig.setMood('happy');
       if (enemy.rig) {
-        enemy.rig.root.visible = true;
-        enemy.rig.root.position.set(2.3, Math.abs(Math.sin(totalElapsed * 8)) * 0.14, 0);
-        enemy.rig.root.rotation.set(0, -0.32, 0);
+        enemy.rig.root.position.set(1.9, 0.25 + Math.abs(Math.sin(totalElapsed * 4.5)) * 0.28, 0);
+        enemy.rig.root.rotation.set(0, -0.22, 0);
       }
     }
 
@@ -3737,7 +3799,7 @@ function animate(now) {
 }
 
 /* ============================================================================
-   15. NAVIGASI LAYAR JUDUL ARCADE, PAUSE & PENYESUAIAN LAYAR
+   15. NAVIGASI MENU, PAUSE & PENYESUAIAN LAYAR
    ============================================================================ */
 function togglePause() {
   if (!state.inMatch) return;
@@ -3750,12 +3812,8 @@ function returnToMenu() {
   state.roundActive = false;
   state.paused = false;
   state.screen = 'menu';
-  state.levelIdx = 0;
-  state.enemyId = 'tuyul';
   clearEffects();
   vignetteEl.classList.remove('flash-rainbow', 'hurt', 'block', 'slowmo', 'screech');
-  buildHorrorAdventureWorld(0);
-  rebuildActiveRigs();
   document.getElementById('hud').hidden = true;
   document.getElementById('controls').classList.add('off');
   document.getElementById('scr-pause').hidden = true;
@@ -3795,13 +3853,12 @@ document.getElementById('btnNext').addEventListener('click', (e) => {
   const act = e.currentTarget.dataset.action;
   if (act === 'next_level') {
     state.levelIdx = Math.min(LEVELS.length - 1, state.levelIdx + 1);
-  } else if (act === 'retry_level') {
-    // Tetap di level saat ini
-  } else {
+  } else if (act === 'restart_all') {
     state.score = 0;
     state.coins = 0;
     state.levelIdx = 0;
   }
+  // 'retry_level' mempertahankan state.levelIdx saat ini
   startNewMatch();
 });
 
